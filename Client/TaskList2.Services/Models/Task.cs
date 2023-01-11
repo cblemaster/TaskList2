@@ -1,14 +1,19 @@
-﻿namespace TaskList2.Services.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace TaskList2.Services.Models
 {
     internal class Task
     {
+        [Key]
         public int Id { get; init; }
+        [Required, MaxLength(100)]
         public string TaskName { get; set; } = null!;
         public DateTime? DueDate { get; set; }
         public int RecurrenceId { get; set; }
         public bool IsImportant { get; set; }
         public bool IsComplete { get; set; }
         public int FolderId { get; set; }
+        [MaxLength(255)]
         public string? Note { get; set; }
         public Folder Folder { get; set; } = null!;
         public Recurrence Recurrence => (Recurrence)this.RecurrenceId;
