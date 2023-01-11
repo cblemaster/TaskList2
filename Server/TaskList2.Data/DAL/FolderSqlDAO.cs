@@ -1,11 +1,12 @@
 ﻿using System.Data;
 using System.Data.SqlClient;
 using TaskList2.Data.Models;
+using TaskList2.Data.Helpers;
 using Task = TaskList2.Data.Models.Task;
 
 namespace TaskList2.Data.DAL
 {
-    internal class FolderSqlDAO : IFolderDAO
+    public class FolderSqlDAO : IFolderDAO
     {
         private readonly string _connectionString;
 
@@ -43,7 +44,7 @@ namespace TaskList2.Data.DAL
 
                 newId = (int)cmd.Parameters["@folderId"].Value;
 
-                return GetFolderWithTasks(newId);
+                return GetFolder(newId);
             }
             catch (SqlException) { throw; }  //TODO: Exception handling? Custom exceptions?
             catch (Exception) { throw; }
@@ -86,10 +87,33 @@ namespace TaskList2.Data.DAL
 
                 int rowsAffected = cmd.ExecuteNonQuery();
 
-                return GetFolderWithTasks(folderToUpdate.Id);
+                return GetFolder(folderToUpdate.Id);
             }
             catch (SqlException) { throw; }
             catch (Exception) { throw; }
+        }
+
+        public List<Folder> GetFolders()
+        {
+            List<Folder> fList = new();
+
+            try
+            {
+                using SqlConnection conn = new(_connectionString);
+                conn.Open();
+
+                SqlCommand cmd = new("GetFolders", conn)
+                {
+                    CommandType = CommandType.StoredProcedure
+                };
+
+                using SqlDataReader reader = cmd.ExecuteReader();
+                fList = GetFoldersFromReader(reader);
+            }
+            catch (SqlException) { throw; }
+            catch (Exception) { throw; }
+
+            return fList;
         }
 
         public Folder GetFolder(int id)
@@ -107,89 +131,8 @@ namespace TaskList2.Data.DAL
                 };
                 cmd.Parameters.AddWithValue("@id", id);
 
-                SqlDataReader reader = cmd.ExecuteReader();
-                if (reader.HasRows && reader.Read())
-                {
-                    f = GetFolderFromReader(reader);
-                }
-            }
-            catch (SqlException) { throw; }
-            catch (Exception) { throw; }
-
-            return f;
-        }
-
-        public List<Folder> GetFolders()
-        {
-            List<Folder> fList = new();
-
-            try
-            {
-                using SqlConnection conn = new(_connectionString);
-                conn.Open();
-
-                SqlCommand cmd = new("GetFolders", conn)
-                {
-                    CommandType = CommandType.StoredProcedure
-                };
-
-                SqlDataReader reader = cmd.ExecuteReader();
-                if (reader.HasRows)
-                {
-                    while (reader.Read())
-                    {
-                        Folder f = GetFolderFromReader(reader);
-                        fList.Add(f);
-                    }
-                }
-
-            }
-            catch (SqlException) { throw; }
-            catch (Exception) { throw; }
-
-            return fList;
-        }
-
-        public List<Folder> GetFoldersWithTasks()
-        {
-            List<Folder> fList = new();
-
-            try
-            {
-                using SqlConnection conn = new(_connectionString);
-                conn.Open();
-
-                SqlCommand cmd = new("GetFoldersWithTasks", conn)
-                {
-                    CommandType = CommandType.StoredProcedure
-                };
-
-                SqlDataReader reader = cmd.ExecuteReader();
-                fList = GetFoldersWithTasksFromReader(reader);
-            }
-            catch (SqlException) { throw; }
-            catch (Exception) { throw; }
-
-            return fList;
-        }
-
-        public Folder GetFolderWithTasks(int id)
-        {
-            Folder f = null!;
-
-            try
-            {
-                using SqlConnection conn = new(_connectionString);
-                conn.Open();
-
-                SqlCommand cmd = new("GetFolderWithTasks", conn)
-                {
-                    CommandType = CommandType.StoredProcedure
-                };
-                cmd.Parameters.AddWithValue("@id", id);
-
-                SqlDataReader reader = cmd.ExecuteReader();
-                f = GetFolderWithTasksFromReader(reader);
+                using SqlDataReader reader = cmd.ExecuteReader();
+                f = GetFolderFromReader(reader);
             }
             catch (SqlException) { throw; }
             catch (Exception) { throw; }
@@ -199,109 +142,108 @@ namespace TaskList2.Data.DAL
 
         private static Folder GetFolderFromReader(SqlDataReader reader)
         {
-            Folder f = new()
-            {
-                Id = reader.GetFieldValue<int>("FolderId"),
-                FolderName = reader.GetFieldValue<string>("FolderName"),
-                IsDeleteable = reader.GetFieldValue<bool>("IsDeleteable"),
-                IsRenameable = reader.GetFieldValue<bool>("IsDeleteable")
-            };
-
-            return f;
-        }
-
-        private static List<Folder> GetFoldersWithTasksFromReader(SqlDataReader reader)
-        {
-            List<Folder> fList = new();
-            Dictionary<(int id, string folderName, bool isDeleteable, bool IsRenameable), List<Task>> fDict = new();
-            (int id, string folderName, bool isDeleteable, bool isRenameable) key = (0, string.Empty, false, false);
+            Folder f = new();
 
             if (reader.HasRows)
             {
                 while (reader.Read())
                 {
-                    key = GetKeyForFolderAndTasksDictionary(reader);
+                    int folderId, taskId, recurrenceId, taskFolderId;
+                    string folderName, taskName;
+                    string? note; 
+                    bool isDeleteable, isRenameable, isImportant, isComplete;
+                    DateTime? dueDate;
+                    SetVariablesFromReader(reader, out folderId, out folderName, out isDeleteable, out isRenameable, out taskId, out taskName, out dueDate, out recurrenceId, out isImportant, out isComplete, out note, out taskFolderId);
 
-                    if (!fDict.ContainsKey(key))
+                    if (f.Id == 0)
                     {
-                        fDict.Add(key, new List<Task>());
+                        SetFolderPropertiesFromVariables(f, folderId, folderName, isDeleteable, isRenameable);
                     }
-
-                    if (reader.GetFieldValue<int>("TaskId") != 0)
+                    if (taskId != 0)
                     {
-                        Task t = InstantiateTaskFromReader(reader, key);
+                        Task t = SetTaskPropertiesFromVariables(f, taskId, recurrenceId, taskFolderId, taskName, note, isImportant, isComplete, dueDate);
 
-                        fDict[key].Add(t);
+                        f.Tasks.Add(t);
                     }
-
-                    Folder f = InstantiateFolderFromDictionary(fDict, key);
-
-                    fList.Add(f);
                 }
             }
-
-            return fList;
-        }
-
-        private static Folder GetFolderWithTasksFromReader(SqlDataReader reader)
-        {
-            Dictionary<(int id, string folderName, bool isDeleteable, bool IsRenameable), List<Task>> fDict = new();
-            (int id, string folderName, bool isDeleteable, bool isRenameable) key = (0, string.Empty, false, false);
-
-            if (reader.HasRows && reader.Read())
-            {
-                key = GetKeyForFolderAndTasksDictionary(reader);
-
-                if (!fDict.ContainsKey(key))
-                {
-                    fDict.Add(key, new List<Task>());
-                }
-
-                if (reader.GetFieldValue<int>("TaskId") != 0)
-                {
-                    Task t = InstantiateTaskFromReader(reader, key);
-                    fDict[key].Add(t);
-                }
-            }
-            Folder f = InstantiateFolderFromDictionary(fDict, key);
-
             return f;
         }
 
-        private static Folder InstantiateFolderFromDictionary(Dictionary<(int id, string folderName, bool isDeleteable, bool IsRenameable), List<Task>> fDict, (int id, string folderName, bool isDeleteable, bool isRenameable) key)
-            => new()
-            {
-                Id = key.id,
-                FolderName = key.folderName,
-                IsDeleteable = key.isDeleteable,
-                IsRenameable = key.isRenameable,
-                Tasks = fDict[key]
-            };
+        private static void SetVariablesFromReader(SqlDataReader reader, out int folderId, out string folderName, out bool isDeleteable, out bool isRenameable, out int taskId, out string taskName, out DateTime? dueDate, out int recurrenceId, out bool isImportant, out bool isComplete, out string? note, out int taskFolderId)
+        {
+            folderId = reader.GetFieldValue<int>("FolderId");
+            folderName = reader.GetFieldValue<string>("FolderName");
+            isDeleteable = reader.GetFieldValue<bool>("IsDeleteable");
+            isRenameable = reader.GetFieldValue<bool>("IsRenameable");
+            taskId = reader.GetFieldValue<int>("TaskId");
+            taskName = reader.GetFieldValue<string>("TaskName");
+            dueDate = reader.GetFieldValue<DateTime?>("DueDate");
+            recurrenceId = reader.GetFieldValue<int>("RecurrenceId");
+            isImportant = reader.GetFieldValue<bool>("IsImportant");
+            isComplete = reader.GetFieldValue<bool>("IsComplete");
+            note = reader.GetFieldValue<string?>("Note");
+            taskFolderId = reader.GetFieldValue<int>("TaskFolderId");
+        }
 
-        private static Task InstantiateTaskFromReader(SqlDataReader reader, (int id, string folderName, bool isDeleteable, bool isRenameable) key)
-            => new()
+        private static List<Folder> GetFoldersFromReader(SqlDataReader reader)
+        {
+            Folder f = new();
+            List<Folder> fList = new();
+
+            if (reader.HasRows)
             {
-                Id = reader.GetFieldValue<int>("TaskId"),
-                TaskName = reader.GetFieldValue<string>("TaskName"),
-                DueDate = reader.GetFieldValue<DateTime?>("DueDate"),
-                RecurrenceId = reader.GetFieldValue<int>("RecurrenceId"),
-                IsImportant = reader.GetFieldValue<bool>("IsImportant"),
-                IsComplete = reader.GetFieldValue<bool>("IsComplete"),
-                FolderId = reader.GetFieldValue<int>("FolderId"),
-                Note = reader.GetFieldValue<string?>("Note"),
-                Folder = new()
+                while (reader.Read())
                 {
-                    Id = key.id,
-                    FolderName = key.folderName,
-                    IsDeleteable = key.isDeleteable,
-                    IsRenameable = key.isRenameable,
-                }
-            };        
+                    int folderId, taskId, recurrenceId, taskFolderId;
+                    string folderName, taskName;
+                    string? note;
+                    bool isDeleteable, isRenameable, isImportant, isComplete;
+                    DateTime? dueDate;
+                    SetVariablesFromReader(reader, out folderId, out folderName, out isDeleteable, out isRenameable, out taskId, out taskName, out dueDate, out recurrenceId, out isImportant, out isComplete, out note, out taskFolderId);
 
-        private static (int id, string folderName, bool isDeleteable, bool isRenameable) GetKeyForFolderAndTasksDictionary(SqlDataReader reader)
-            => (reader.GetFieldValue<int>("FolderId"),
-                    reader.GetFieldValue<string>("FolderName"),
-                    reader.GetFieldValue<bool>("IsDeleteable"),
-                    reader.GetFieldValue<bool>("IsRenameable"));        
+                    if (!fList.Select(f => f.Id).ToList().Contains(folderId))
+                    {
+                        f = new();
+                        SetFolderPropertiesFromVariables(f, folderId, folderName, isDeleteable, isRenameable);
+                        fList.Add(f);
+                    }
+                    if (taskId != 0)
+                    {
+                        Task t = SetTaskPropertiesFromVariables(f, taskId, recurrenceId, taskFolderId, taskName, note, isImportant, isComplete, dueDate);
+
+                        f.Tasks.Add(t);
+                    }
+                }
+            }
+            return fList;
+        }
+
+        private static Task SetTaskPropertiesFromVariables(Folder f, int taskId, int recurrenceId, int taskFolderId, string taskName, string? note, bool isImportant, bool isComplete, DateTime? dueDate) => new()
+        {
+            Id = taskId,
+            TaskName = taskName,
+            DueDate = dueDate,
+            RecurrenceId = recurrenceId,
+            IsImportant = isImportant,
+            IsComplete = isComplete,
+            Note = note,
+            FolderId = taskFolderId,
+            Folder = new()
+            {
+                Id = f.Id,
+                FolderName = f.FolderName,
+                IsDeleteable = f.IsDeleteable,
+                IsRenameable = f.IsRenameable,
+            }
+        };
+
+        private static void SetFolderPropertiesFromVariables(Folder f, int folderId, string folderName, bool isDeleteable, bool isRenameable)
+        {
+            f.Id = folderId;
+            f.FolderName = folderName;
+            f.IsDeleteable = isDeleteable;
+            f.IsRenameable = isRenameable;
+        }
     }
 }

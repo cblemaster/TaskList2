@@ -6,8 +6,6 @@ namespace TaskList2.Data.DAL
     {
 		Folder GetFolder(int id);
 		List<Folder> GetFolders();
-		Folder GetFolderWithTasks(int id);
-		List<Folder> GetFoldersWithTasks();
 		Folder AddFolder(Folder folderToAdd);
 		Folder UpdateFolder(Folder folderToUpdate);
 		bool DeleteFolder(int id);

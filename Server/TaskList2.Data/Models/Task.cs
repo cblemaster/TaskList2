@@ -2,7 +2,7 @@
 {
     public class Task
     {
-        public int Id { get; init; }
+        public int Id { get; set; }
         public string TaskName { get; set; } = null!;
         public DateTime? DueDate { get; set; }
         public int RecurrenceId { get; set; }

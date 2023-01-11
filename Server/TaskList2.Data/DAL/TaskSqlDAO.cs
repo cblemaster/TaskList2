@@ -1,10 +1,11 @@
 ﻿using System.Data;
 using System.Data.SqlClient;
 using Task = TaskList2.Data.Models.Task;
+using TaskList2.Data.Helpers;
 
 namespace TaskList2.Data.DAL
 {
-    internal class TaskSqlDAO : ITaskDAO
+    public class TaskSqlDAO : ITaskDAO
     {
         private readonly string _connectionString;
 
@@ -120,7 +121,7 @@ namespace TaskList2.Data.DAL
                     CommandType = CommandType.StoredProcedure
                 };
 
-                SqlDataReader reader = cmd.ExecuteReader();
+                using SqlDataReader reader = cmd.ExecuteReader();
                 if (reader.HasRows)
                 {
                     while (reader.Read())
@@ -149,7 +150,7 @@ namespace TaskList2.Data.DAL
                     CommandType = CommandType.StoredProcedure
                 };
 
-                SqlDataReader reader = cmd.ExecuteReader();
+                using SqlDataReader reader = cmd.ExecuteReader();
                 if (reader.HasRows)
                 {
                     while (reader.Read())
@@ -178,7 +179,7 @@ namespace TaskList2.Data.DAL
                     CommandType = CommandType.StoredProcedure
                 };
 
-                SqlDataReader reader = cmd.ExecuteReader();
+                using SqlDataReader reader = cmd.ExecuteReader();
                 if (reader.HasRows)
                 {
                     while (reader.Read())
@@ -207,7 +208,7 @@ namespace TaskList2.Data.DAL
                     CommandType = CommandType.StoredProcedure
                 };
 
-                SqlDataReader reader = cmd.ExecuteReader();
+                using SqlDataReader reader = cmd.ExecuteReader();
                 if (reader.HasRows)
                 {
                     while (reader.Read())
@@ -237,7 +238,7 @@ namespace TaskList2.Data.DAL
                 };
                 cmd.Parameters.AddWithValue("@id", id);
 
-                SqlDataReader reader = cmd.ExecuteReader();
+                using SqlDataReader reader = cmd.ExecuteReader();
                 if (reader.HasRows && reader.Read())
                 {
                     t = GetTaskFromReader(reader);
@@ -262,7 +263,7 @@ namespace TaskList2.Data.DAL
                     CommandType = CommandType.StoredProcedure
                 };
 
-                SqlDataReader reader = cmd.ExecuteReader();
+                using SqlDataReader reader = cmd.ExecuteReader();
                 if (reader.HasRows)
                 {
                     while (reader.Read())
