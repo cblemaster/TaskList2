@@ -13,5 +13,24 @@ namespace TaskList2.Services.Models
         public bool IsDeleteable { get; init; }
         public bool IsRenameable { get; init; }
         public ICollection<Task> Tasks { get; set; } = new List<Task>();
+
+        internal string GetCapitalizedFolderName(string folderName)
+        {
+            char firstChar = folderName[0];
+            
+            if (firstChar.ToString() == firstChar.ToString().ToUpper())
+                return folderName;
+            
+            return firstChar.ToString().ToUpper() + folderName.Substring(1);
+        }
+
+        internal bool IsFolderNameUnique(string folderName)
+        {
+            FolderService fs = new();
+            if (fs.GetFolders().Select(f => f.FolderName).ToList().Contains(folderName))
+                return false;
+            
+            return true;
+        }
     }
 }
