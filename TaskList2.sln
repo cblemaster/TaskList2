@@ -5,7 +5,9 @@ VisualStudioVersion = 17.3.32922.545
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TaskList2.Data", "Server\TaskList2.Data\TaskList2.Data.csproj", "{F1A22F93-AC2C-4DEA-9FCC-EF02917B2B1C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TaskList2.API", "Server\TaskList2.API\TaskList2.API.csproj", "{DB704F65-5148-481E-8669-77A7B6B5DED8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TaskList2.API", "Server\TaskList2.API\TaskList2.API.csproj", "{DB704F65-5148-481E-8669-77A7B6B5DED8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TaskList2.Services", "Client\TaskList2.Services\TaskList2.Services.csproj", "{1A02B7B4-41BB-4623-8773-065AFA316EE1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{DB704F65-5148-481E-8669-77A7B6B5DED8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DB704F65-5148-481E-8669-77A7B6B5DED8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DB704F65-5148-481E-8669-77A7B6B5DED8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1A02B7B4-41BB-4623-8773-065AFA316EE1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1A02B7B4-41BB-4623-8773-065AFA316EE1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1A02B7B4-41BB-4623-8773-065AFA316EE1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1A02B7B4-41BB-4623-8773-065AFA316EE1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
