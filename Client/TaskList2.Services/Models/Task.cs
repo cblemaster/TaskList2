@@ -19,5 +19,23 @@ namespace TaskList2.Services.Models
         public Recurrence Recurrence => (Recurrence)this.RecurrenceId;
         public bool IsPlanned => this.DueDate.HasValue;
         public bool IsRecurring => this.Recurrence != Recurrence.None;
+
+        public ICollection<string> ValidationErrors { get; set; } = new List<string>();
+
+        public bool IsValid()
+        {
+            if (this.TaskName.Length > 100)
+                this.ValidationErrors.Add("Max length for TaskName is 100.");
+            if (string.IsNullOrEmpty(this.TaskName)
+                || string.IsNullOrWhiteSpace(this.TaskName))
+                this.ValidationErrors.Add("TaskName is required.");
+            if (this.Note != null && this.Note.Length > 255)
+                this.ValidationErrors.Add("Max length for Note is 255.");
+
+            if (this.ValidationErrors.Any())
+                return false;
+
+            return true;
+        }
     }
 }
