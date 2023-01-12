@@ -106,7 +106,7 @@ namespace TaskList2.API.Controllers
 
             if (existing == null)
                 return NotFound("Task not found");
-                
+
             Task updated = _taskDAO.UpdateTask(taskToUpdate);
             return updated != null ? Ok(updated) : StatusCode(500); //if delete is successful, return NoContent, otherwise 500 internal server error
         }
@@ -119,7 +119,7 @@ namespace TaskList2.API.Controllers
 
             if (deleted == null)
                 return NotFound("Task not found");
-            
+
             bool success = _taskDAO.DeleteTask(id);
 
             return success ? NoContent() : StatusCode(500); //if delete is successful, return NoContent, otherwise 500 internal server error

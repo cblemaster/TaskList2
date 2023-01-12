@@ -4,8 +4,8 @@ namespace TaskList2.Data.DAL
 {
     public interface ITaskDAO
     {
-		Task GetTask(int id);
-		List<Task> GetTasks();
+        Task GetTask(int id);
+        List<Task> GetTasks();
         List<Task> GetImportantTasks();
         List<Task> GetCompletedTasks();
         List<Task> GetRecurringTasks();

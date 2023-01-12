@@ -1,4 +1,3 @@
-using Microsoft.Extensions.DependencyInjection;
 using TaskList2.Data.DAL;
 
 var builder = WebApplication.CreateBuilder(args);

@@ -56,7 +56,7 @@ namespace TaskList2.API.Controllers
         public IActionResult UpdateFolder(Folder folderToUpdate)
         {
             Folder existing = _folderDAO.GetFolder(folderToUpdate.Id);
-            
+
             if (existing == null)
                 return NotFound("Folder not found");
             else if (folderToUpdate.IsRenameable)

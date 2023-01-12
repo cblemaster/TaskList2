@@ -17,10 +17,10 @@ namespace TaskList2.Services.Models
         internal static string GetCapitalizedFolderName(string folderName)
         {
             char firstChar = folderName[0];
-            
+
             if (firstChar.ToString() == firstChar.ToString().ToUpper())
                 return folderName;
-            
+
             return string.Concat(firstChar.ToString().ToUpper(), folderName.AsSpan(1));
         }
 
@@ -29,7 +29,7 @@ namespace TaskList2.Services.Models
             FolderService fs = new();
             if (fs.GetFolders().Select(f => f.FolderName).ToList().Contains(folderName))
                 return false;
-            
+
             return true;
         }
 
@@ -37,7 +37,7 @@ namespace TaskList2.Services.Models
         {
             this.FolderName = GetCapitalizedFolderName(FolderName);
 
-            if (string.IsNullOrEmpty(this.FolderName) 
+            if (string.IsNullOrEmpty(this.FolderName)
                 || string.IsNullOrWhiteSpace(this.FolderName))
                 this.ValidationErrors.Add("FolderName is required.");
             if (!IsFolderNameUnique(this.FolderName))

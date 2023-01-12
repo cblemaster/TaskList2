@@ -1,7 +1,7 @@
 ﻿using System.Data;
 using System.Data.SqlClient;
-using Task = TaskList2.Data.Models.Task;
 using TaskList2.Data.Helpers;
+using Task = TaskList2.Data.Models.Task;
 
 namespace TaskList2.Data.DAL
 {
@@ -129,7 +129,7 @@ namespace TaskList2.Data.DAL
                         Task t = GetTaskFromReader(reader);
                         tList.Add(t);
                     }
-                }                
+                }
             }
             catch (SqlException) { throw; }
             catch (Exception) { throw; }
@@ -158,7 +158,7 @@ namespace TaskList2.Data.DAL
                         Task t = GetTaskFromReader(reader);
                         tList.Add(t);
                     }
-                }                
+                }
             }
             catch (SqlException) { throw; }
             catch (Exception) { throw; }
@@ -187,7 +187,7 @@ namespace TaskList2.Data.DAL
                         Task t = GetTaskFromReader(reader);
                         tList.Add(t);
                     }
-                }                
+                }
             }
             catch (SqlException) { throw; }
             catch (Exception) { throw; }
@@ -216,7 +216,7 @@ namespace TaskList2.Data.DAL
                         Task t = GetTaskFromReader(reader);
                         tList.Add(t);
                     }
-                }                
+                }
             }
             catch (SqlException) { throw; }
             catch (Exception) { throw; }
@@ -271,7 +271,7 @@ namespace TaskList2.Data.DAL
                         Task t = GetTaskFromReader(reader);
                         tList.Add(t);
                     }
-                }                
+                }
             }
             catch (SqlException) { throw; }
             catch (Exception) { throw; }

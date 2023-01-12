@@ -17,7 +17,7 @@ namespace TaskList2.Services
             RestResponse<Folder> response = client.Execute<Folder>(request);
             return response.Data!;
         }
-        
+
         internal List<Folder> GetFolders()
         {
             RestRequest request = new("Folder", Method.Get);
@@ -32,7 +32,7 @@ namespace TaskList2.Services
             RestResponse<Folder> response = client.Execute<Folder>(request);
             return response.Data!;
         }
-        
+
         internal Folder UpdateFolder(Folder folderToUpdate)
         {
             RestRequest request = new("Folder/{id}", Method.Put) { RequestFormat = DataFormat.Json };
@@ -41,7 +41,7 @@ namespace TaskList2.Services
             RestResponse<Folder> response = client.Execute<Folder>(request);
             return response.Data!;
         }
-        
+
         internal bool DeleteFolder(int id)
         {
             RestRequest request = new("Folder/{id}", Method.Delete);

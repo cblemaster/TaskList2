@@ -16,42 +16,42 @@ namespace TaskList2.Services
             RestResponse<Task> response = client.Execute<Task>(request);
             return response.Data!;
         }
-        
+
         internal List<Task> GetTasks()
         {
             RestRequest request = new("Task", Method.Get);
             RestResponse<List<Task>> response = client.Execute<List<Task>>(request);
             return response.Data!;
         }
-        
+
         internal List<Task> GetImportantTasks()
         {
             RestRequest request = new("Task/important", Method.Get);
             RestResponse<List<Task>> response = client.Execute<List<Task>>(request);
             return response.Data!;
         }
-        
+
         internal List<Task> GetCompletedTasks()
         {
             RestRequest request = new("Task/completed", Method.Get);
             RestResponse<List<Task>> response = client.Execute<List<Task>>(request);
             return response.Data!;
         }
-        
+
         internal List<Task> GetRecurringTasks()
         {
             RestRequest request = new("Task/recurring", Method.Get);
             RestResponse<List<Task>> response = client.Execute<List<Task>>(request);
             return response.Data!;
         }
-        
+
         internal List<Task> GetPlannedTasks()
         {
             RestRequest request = new("Task/planned", Method.Get);
             RestResponse<List<Task>> response = client.Execute<List<Task>>(request);
             return response.Data!;
         }
-        
+
         internal Task AddTask(Task taskToAdd)
         {
             RestRequest request = new("Task", Method.Post) { RequestFormat = DataFormat.Json };
@@ -59,7 +59,7 @@ namespace TaskList2.Services
             RestResponse<Task> response = client.Execute<Task>(request);
             return response.Data!;
         }
-        
+
         internal Task UpdateTask(Task taskToUpdate)
         {
             RestRequest request = new("Task/{id}", Method.Put) { RequestFormat = DataFormat.Json };
@@ -68,7 +68,7 @@ namespace TaskList2.Services
             RestResponse<Task> response = client.Execute<Task>(request);
             return response.Data!;
         }
-        
+
         internal bool DeleteTask(int id)
         {
             RestRequest request = new("Task/{id}", Method.Delete);

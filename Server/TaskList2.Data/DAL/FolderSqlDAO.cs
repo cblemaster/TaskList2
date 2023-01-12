@@ -1,7 +1,7 @@
 ﻿using System.Data;
 using System.Data.SqlClient;
-using TaskList2.Data.Models;
 using TaskList2.Data.Helpers;
+using TaskList2.Data.Models;
 using Task = TaskList2.Data.Models.Task;
 
 namespace TaskList2.Data.DAL
@@ -148,20 +148,39 @@ namespace TaskList2.Data.DAL
             {
                 while (reader.Read())
                 {
-                    int folderId, taskId, recurrenceId, taskFolderId;
-                    string folderName, taskName;
-                    string? note; 
-                    bool isDeleteable, isRenameable, isImportant, isComplete;
-                    DateTime? dueDate;
-                    SetVariablesFromReader(reader, out folderId, out folderName, out isDeleteable, out isRenameable, out taskId, out taskName, out dueDate, out recurrenceId, out isImportant, out isComplete, out note, out taskFolderId);
+                    SetVariablesFromReader(reader,
+                                           out int folderId,
+                                           out string folderName,
+                                           out bool isDeleteable,
+                                           out bool isRenameable,
+                                           out int taskId,
+                                           out string taskName,
+                                           out DateTime? dueDate,
+                                           out int recurrenceId,
+                                           out bool isImportant,
+                                           out bool isComplete,
+                                           out string? note,
+                                           out int taskFolderId);
 
                     if (f.Id == 0)
                     {
-                        SetFolderPropertiesFromVariables(f, folderId, folderName, isDeleteable, isRenameable);
+                        SetFolderPropertiesFromVariables(f,
+                                                         folderId,
+                                                         folderName,
+                                                         isDeleteable,
+                                                         isRenameable);
                     }
                     if (taskId != 0)
                     {
-                        Task t = SetTaskPropertiesFromVariables(f, taskId, recurrenceId, taskFolderId, taskName, note, isImportant, isComplete, dueDate);
+                        Task t = SetTaskPropertiesFromVariables(f,
+                                                                taskId,
+                                                                recurrenceId,
+                                                                taskFolderId,
+                                                                taskName,
+                                                                note,
+                                                                isImportant,
+                                                                isComplete,
+                                                                dueDate);
 
                         f.Tasks.Add(t);
                     }
@@ -170,7 +189,19 @@ namespace TaskList2.Data.DAL
             return f;
         }
 
-        private static void SetVariablesFromReader(SqlDataReader reader, out int folderId, out string folderName, out bool isDeleteable, out bool isRenameable, out int taskId, out string taskName, out DateTime? dueDate, out int recurrenceId, out bool isImportant, out bool isComplete, out string? note, out int taskFolderId)
+        private static void SetVariablesFromReader(SqlDataReader reader,
+                                                   out int folderId,
+                                                   out string folderName,
+                                                   out bool isDeleteable,
+                                                   out bool isRenameable,
+                                                   out int taskId,
+                                                   out string taskName,
+                                                   out DateTime? dueDate,
+                                                   out int recurrenceId,
+                                                   out bool isImportant,
+                                                   out bool isComplete,
+                                                   out string? note,
+                                                   out int taskFolderId)
         {
             folderId = reader.GetFieldValue<int>("FolderId");
             folderName = reader.GetFieldValue<string>("FolderName");
@@ -195,22 +226,41 @@ namespace TaskList2.Data.DAL
             {
                 while (reader.Read())
                 {
-                    int folderId, taskId, recurrenceId, taskFolderId;
-                    string folderName, taskName;
-                    string? note;
-                    bool isDeleteable, isRenameable, isImportant, isComplete;
-                    DateTime? dueDate;
-                    SetVariablesFromReader(reader, out folderId, out folderName, out isDeleteable, out isRenameable, out taskId, out taskName, out dueDate, out recurrenceId, out isImportant, out isComplete, out note, out taskFolderId);
+                    SetVariablesFromReader(reader,
+                                           out int folderId,
+                                           out string folderName,
+                                           out bool isDeleteable,
+                                           out bool isRenameable,
+                                           out int taskId,
+                                           out string taskName,
+                                           out DateTime? dueDate,
+                                           out int recurrenceId,
+                                           out bool isImportant,
+                                           out bool isComplete,
+                                           out string? note,
+                                           out int taskFolderId);
 
                     if (!fList.Select(f => f.Id).ToList().Contains(folderId))
                     {
                         f = new();
-                        SetFolderPropertiesFromVariables(f, folderId, folderName, isDeleteable, isRenameable);
+                        SetFolderPropertiesFromVariables(f,
+                                                         folderId,
+                                                         folderName,
+                                                         isDeleteable,
+                                                         isRenameable);
                         fList.Add(f);
                     }
                     if (taskId != 0)
                     {
-                        Task t = SetTaskPropertiesFromVariables(f, taskId, recurrenceId, taskFolderId, taskName, note, isImportant, isComplete, dueDate);
+                        Task t = SetTaskPropertiesFromVariables(f,
+                                                                taskId,
+                                                                recurrenceId,
+                                                                taskFolderId,
+                                                                taskName,
+                                                                note,
+                                                                isImportant,
+                                                                isComplete,
+                                                                dueDate);
 
                         f.Tasks.Add(t);
                     }
@@ -219,26 +269,38 @@ namespace TaskList2.Data.DAL
             return fList;
         }
 
-        private static Task SetTaskPropertiesFromVariables(Folder f, int taskId, int recurrenceId, int taskFolderId, string taskName, string? note, bool isImportant, bool isComplete, DateTime? dueDate) => new()
-        {
-            Id = taskId,
-            TaskName = taskName,
-            DueDate = dueDate,
-            RecurrenceId = recurrenceId,
-            IsImportant = isImportant,
-            IsComplete = isComplete,
-            Note = note,
-            FolderId = taskFolderId,
-            Folder = new()
-            {
-                Id = f.Id,
-                FolderName = f.FolderName,
-                IsDeleteable = f.IsDeleteable,
-                IsRenameable = f.IsRenameable,
-            }
-        };
+        private static Task SetTaskPropertiesFromVariables(Folder f,
+                                                           int taskId,
+                                                           int recurrenceId,
+                                                           int taskFolderId,
+                                                           string taskName,
+                                                           string? note,
+                                                           bool isImportant,
+                                                           bool isComplete,
+                                                           DateTime? dueDate) => new()
+                                                           {
+                                                               Id = taskId,
+                                                               TaskName = taskName,
+                                                               DueDate = dueDate,
+                                                               RecurrenceId = recurrenceId,
+                                                               IsImportant = isImportant,
+                                                               IsComplete = isComplete,
+                                                               Note = note,
+                                                               FolderId = taskFolderId,
+                                                               Folder = new()
+                                                               {
+                                                                   Id = f.Id,
+                                                                   FolderName = f.FolderName,
+                                                                   IsDeleteable = f.IsDeleteable,
+                                                                   IsRenameable = f.IsRenameable,
+                                                               }
+                                                           };
 
-        private static void SetFolderPropertiesFromVariables(Folder f, int folderId, string folderName, bool isDeleteable, bool isRenameable)
+        private static void SetFolderPropertiesFromVariables(Folder f,
+                                                             int folderId,
+                                                             string folderName,
+                                                             bool isDeleteable,
+                                                             bool isRenameable)
         {
             f.Id = folderId;
             f.FolderName = folderName;
