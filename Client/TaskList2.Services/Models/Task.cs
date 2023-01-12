@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using TaskList2.Services.Validation;
 
 namespace TaskList2.Services.Models
 {
@@ -20,17 +21,17 @@ namespace TaskList2.Services.Models
         public bool IsPlanned => this.DueDate.HasValue;
         public bool IsRecurring => this.Recurrence != Recurrence.None;
 
-        public ICollection<string> ValidationErrors { get; set; } = new List<string>();
+        public ICollection<ValidationError> ValidationErrors { get; set; } = new List<ValidationError>();
 
         public bool IsValid()
         {
             if (this.TaskName.Length > 100)
-                this.ValidationErrors.Add("Max length for TaskName is 100.");
+                this.ValidationErrors.Add(new() { InvalidPropertyName = "TaskName" , ErrorMessage = "Max length for TaskName is 100." });
             if (string.IsNullOrEmpty(this.TaskName)
                 || string.IsNullOrWhiteSpace(this.TaskName))
-                this.ValidationErrors.Add("TaskName is required.");
+                this.ValidationErrors.Add(new() { InvalidPropertyName = "TaskName", ErrorMessage = "TaskName is required." });
             if (this.Note != null && this.Note.Length > 255)
-                this.ValidationErrors.Add("Max length for Note is 255.");
+                this.ValidationErrors.Add(new() { InvalidPropertyName = "Note", ErrorMessage = "Max length for Note is 255." });
 
             if (this.ValidationErrors.Any())
                 return false;
