@@ -1,6 +1,6 @@
 ﻿namespace TaskList2.Services.Models
 {
-    internal enum Recurrence
+    public enum Recurrence
     {
         None = 0,
         Daily = 1,

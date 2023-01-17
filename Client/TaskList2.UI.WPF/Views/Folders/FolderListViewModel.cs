@@ -1,12 +1,60 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TaskList2.Services.Models;
+using TaskList2.Services;
+using Task = TaskList2.Services.Models.Task;
 
 namespace TaskList2.UI.WPF.Views.Folders
 {
-    internal class FolderListViewModel
+    public class FolderListViewModel : INotifyPropertyChanged
     {
+        public FolderListViewModel()
+        {
+            this.Folders = new ObservableCollection<Folder>(_fs.GetFolders());
+            foreach (Folder f in this.Folders)
+            {
+                switch (f.FolderName)
+                {
+                    case "Planned":
+                        f.Tasks = new ObservableCollection<Task>(_ts.GetPlannedTasks());
+                        break;
+                    case "Completed":
+                        f.Tasks = new ObservableCollection<Task>(_ts.GetCompletedTasks());
+                        break;
+                    case "Recurring":
+                        f.Tasks = new ObservableCollection<Task>(_ts.GetRecurringTasks());
+                        break;
+                    case "Important":
+                        f.Tasks = new ObservableCollection<Task>(_ts.GetImportantTasks());
+                        break;
+                }
+            }
+        }
+
+        private readonly FolderService _fs = new();
+        private readonly TaskService _ts = new();
+        private ObservableCollection<Folder> _folders = new();
+
+        public event PropertyChangedEventHandler? PropertyChanged = delegate { };
+
+        public ObservableCollection<Folder> Folders
+        {
+            get { return _folders; }
+            set
+            {
+                if (value != _folders)
+                {
+                    _folders = value;
+                    PropertyChanged!(this, new PropertyChangedEventArgs(nameof(Folders)));
+                };
+            }
+        }
     }
+
+
 }

@@ -7,11 +7,14 @@
              mc:Ignorable="d" 
              d:DesignHeight="150"
              d:DesignWidth="390">
-    <Grid Margin="10, 10, 10, 10">
+    <UserControl.DataContext>
+        <local:AddUpdateFolderViewModel />
+    </UserControl.DataContext>
+    <Grid>
         <Grid x:Name="grdMain"
-              Margin="3 3 3 3"
               Width="auto"
-              Height="auto">
+              Height="auto"
+              Style="{StaticResource BasicGridStyle}">
             <Grid.RowDefinitions>
                 <RowDefinition Height="auto" />
                 <RowDefinition Height="auto" />
@@ -20,12 +23,12 @@
                 <ColumnDefinition Width="25*" />
                 <ColumnDefinition Width="75*" />
             </Grid.ColumnDefinitions>
-            <Label Content="Folder Name:"
+            <Label Content="Folder Name"
                    x:Name="lblFolderName"
                    Grid.Row="0"
                    Grid.Column="0"
                    Style="{StaticResource BasicLabelStyle}" HorizontalAlignment="Right" />
-            <TextBox Text="TextBox"
+            <TextBox Text="{Binding Folder.FolderName}"
                      x:Name="txtFolderName"
                      Grid.Row="0"
                      Grid.Column="1"
@@ -33,23 +36,21 @@
                      Width="auto"
                      HorizontalAlignment="Stretch"
                      Style="{StaticResource BasicTextBoxStyle}" />
-            <StackPanel Grid.Column="1"
+            <StackPanel x:Name="spButtons"
+                        Grid.Column="1"
                         Grid.Row="1"
                         FlowDirection="LeftToRight"
                         Orientation="Horizontal"
-                        Margin="1 1 1 1"
+                        Margin="3 3 3 3"
                         HorizontalAlignment="Stretch">
-                <Button Content="Update"
-                        Grid.Row="1"
-                        Grid.Column="0"
+                <Button x:Name="btnUpdate"
+                        Content="Update"
                         Style="{StaticResource BasicButtonStyle}" />
-                <Button Content="Add"
-                        Grid.Row="1"
-                        Grid.Column="1"
+                <Button x:Name="btnAdd"
+                        Content="Add"
                         Style="{StaticResource BasicButtonStyle}" />
-                <Button Content="Cancel"
-                        Grid.Row="1"
-                        Grid.Column="1"
+                <Button x:Name="btnCancel"
+                        Content="Cancel"
                         Style="{StaticResource BasicButtonStyle}" />
             </StackPanel>
         </Grid>

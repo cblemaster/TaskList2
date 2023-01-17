@@ -1,15 +1,16 @@
 ﻿using RestSharp;
+using Task = TaskList2.Services.Models.Task;
 
 namespace TaskList2.Services
 {
     //https://stackoverflow.com/questions/10226089/restsharp-simple-complete-example
 
-    internal class TaskService
+    public class TaskService
     {
         private readonly static string API_BASE_URL = "https://localhost:7021/";
         private readonly RestClient client = new(API_BASE_URL);
 
-        internal Task GetTask(int id)
+        public Task GetTask(int id)
         {
             RestRequest request = new("Task/{id}", Method.Get);
             request.AddParameter("id", id, ParameterType.UrlSegment);
@@ -17,42 +18,42 @@ namespace TaskList2.Services
             return response.Data!;
         }
 
-        internal List<Task> GetTasks()
+        public List<Task> GetTasks()
         {
             RestRequest request = new("Task", Method.Get);
             RestResponse<List<Task>> response = client.Execute<List<Task>>(request);
             return response.Data!;
         }
 
-        internal List<Task> GetImportantTasks()
+        public List<Task> GetImportantTasks()
         {
             RestRequest request = new("Task/important", Method.Get);
             RestResponse<List<Task>> response = client.Execute<List<Task>>(request);
             return response.Data!;
         }
 
-        internal List<Task> GetCompletedTasks()
+        public List<Task> GetCompletedTasks()
         {
             RestRequest request = new("Task/completed", Method.Get);
             RestResponse<List<Task>> response = client.Execute<List<Task>>(request);
             return response.Data!;
         }
 
-        internal List<Task> GetRecurringTasks()
+        public List<Task> GetRecurringTasks()
         {
             RestRequest request = new("Task/recurring", Method.Get);
             RestResponse<List<Task>> response = client.Execute<List<Task>>(request);
             return response.Data!;
         }
 
-        internal List<Task> GetPlannedTasks()
+        public List<Task> GetPlannedTasks()
         {
             RestRequest request = new("Task/planned", Method.Get);
             RestResponse<List<Task>> response = client.Execute<List<Task>>(request);
             return response.Data!;
         }
 
-        internal Task AddTask(Task taskToAdd)
+        public Task AddTask(Task taskToAdd)
         {
             RestRequest request = new("Task", Method.Post) { RequestFormat = DataFormat.Json };
             request.AddBody(taskToAdd);
@@ -60,7 +61,7 @@ namespace TaskList2.Services
             return response.Data!;
         }
 
-        internal Task UpdateTask(Task taskToUpdate)
+        public Task UpdateTask(Task taskToUpdate)
         {
             RestRequest request = new("Task/{id}", Method.Put) { RequestFormat = DataFormat.Json };
             request.AddParameter("id", taskToUpdate.Id);
@@ -69,7 +70,7 @@ namespace TaskList2.Services
             return response.Data!;
         }
 
-        internal bool DeleteTask(int id)
+        public bool DeleteTask(int id)
         {
             RestRequest request = new("Task/{id}", Method.Delete);
             request.AddParameter("id", id);

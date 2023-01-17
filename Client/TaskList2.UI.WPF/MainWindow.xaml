@@ -7,9 +7,9 @@
         xmlns:localfolderviews="clr-namespace:TaskList2.UI.WPF.Views.Folders"
         mc:Ignorable="d"
         Title="MainWindow"
-        Height="450"
-        Width="800">
-    <Grid Width="auto" Height="auto">
-        <localfolderviews:AddUpdateFolderView />
+        Height="500"
+        Width="900">
+    <Grid>
+        <localfolderviews:FolderListView />
     </Grid>
 </Window>

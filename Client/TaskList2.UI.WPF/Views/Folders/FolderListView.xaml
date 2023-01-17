@@ -5,8 +5,94 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:TaskList2.UI.WPF.Views.Folders"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="500"
+             d:DesignWidth="390">
+    <UserControl.DataContext>
+        <local:FolderListViewModel />
+    </UserControl.DataContext>
     <Grid>
-            
+        <Grid x:Name="grdMain"
+              Width="auto"
+              Height="auto"
+              Style="{StaticResource BasicGridStyle}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="6*" />
+                <ColumnDefinition Width="4*" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="auto" />
+            </Grid.RowDefinitions>
+            <ListView x:Name="lvFolders"
+                      Grid.Row="0"
+                      Grid.Column="0"
+                      Style="{StaticResource BasicListViewStyle}"
+                      ItemsSource="{Binding Folders}">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <Grid x:Name="grdFolders"
+                              Style="{StaticResource BasicGridStyle}"
+                              Width="auto"
+                              Height="auto">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="150" />
+                                <ColumnDefinition Width="75" />
+                                <ColumnDefinition Width="75" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock x:Name="tbFolderName"
+                                       Text="{Binding FolderName}"
+                                       Grid.Column="0"
+                                       Style="{StaticResource BasicTextBlockStyle}" />
+                            <Button Content="Rename"
+                                    x:Name="btnRename"
+                                    Grid.Column="1"
+                                    Visibility="Collapsed"
+                                    Style="{StaticResource BasicButtonStyle}" />
+                            <Button Content="Delete"
+                                    x:Name="btnDelete"
+                                    Grid.Column="2"
+                                    Visibility="Collapsed"
+                                    Style="{StaticResource BasicButtonStyle}" />
+                        </Grid>
+                        <DataTemplate.Triggers>
+                            <DataTrigger Binding="{Binding Path=IsSelected, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ListViewItem}}}"
+                                         Value="True">
+                                <Setter TargetName="btnRename"
+                                        Property="Visibility"
+                                        Value="Visible" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding Path=IsRenameable}"
+                                         Value="False">
+                                <Setter TargetName="btnRename"
+                                        Property="Visibility"
+                                        Value="Collapsed" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding Path=IsSelected, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ListViewItem}}}"
+                                         Value="True">
+                                <Setter TargetName="btnDelete"
+                                        Property="Visibility"
+                                        Value="Visible" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding Path=IsDeleteable}"
+                                         Value="False">
+                                <Setter TargetName="btnDelete"
+                                        Property="Visibility"
+                                        Value="Collapsed" />
+                            </DataTrigger>
+                        </DataTemplate.Triggers>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+            <StackPanel x:Name="spButtons"
+                        Grid.Column="0"
+                        Grid.Row="1"
+                        FlowDirection="LeftToRight"
+                        Orientation="Horizontal"
+                        Margin="5, 5, 5, 5">
+                <Button x:Name="btnAddFolder"
+                    Content="Add folder"
+                    Style="{StaticResource BasicButtonStyle}" />
+            </StackPanel>            
+        </Grid>
     </Grid>
 </UserControl>

@@ -3,7 +3,7 @@ using TaskList2.Services.Validation;
 
 namespace TaskList2.Services.Models
 {
-    internal class Folder
+    public class Folder
     {
         [Key]
         public int Id { get; init; }

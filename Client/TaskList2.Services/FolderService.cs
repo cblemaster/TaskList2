@@ -5,12 +5,12 @@ namespace TaskList2.Services
 {
     //https://stackoverflow.com/questions/10226089/restsharp-simple-complete-example
 
-    internal class FolderService
+    public class FolderService
     {
         private readonly static string API_BASE_URL = "https://localhost:7021/";
         private readonly RestClient client = new(API_BASE_URL);
 
-        internal Folder GetFolder(int id)
+        public Folder GetFolder(int id)
         {
             RestRequest request = new("Folder/{id}", Method.Get);
             request.AddParameter("id", id, ParameterType.UrlSegment);
@@ -18,14 +18,14 @@ namespace TaskList2.Services
             return response.Data!;
         }
 
-        internal List<Folder> GetFolders()
+        public List<Folder> GetFolders()
         {
             RestRequest request = new("Folder", Method.Get);
             RestResponse<List<Folder>> response = client.Execute<List<Folder>>(request);
             return response.Data!;
         }
 
-        internal Folder AddFolder(Folder folderToAdd)
+        public Folder AddFolder(Folder folderToAdd)
         {
             RestRequest request = new("Folder", Method.Post) { RequestFormat = DataFormat.Json };
             request.AddBody(folderToAdd);
@@ -33,7 +33,7 @@ namespace TaskList2.Services
             return response.Data!;
         }
 
-        internal Folder UpdateFolder(Folder folderToUpdate)
+        public Folder UpdateFolder(Folder folderToUpdate)
         {
             RestRequest request = new("Folder/{id}", Method.Put) { RequestFormat = DataFormat.Json };
             request.AddParameter("id", folderToUpdate.Id);
@@ -42,7 +42,7 @@ namespace TaskList2.Services
             return response.Data!;
         }
 
-        internal bool DeleteFolder(int id)
+        public bool DeleteFolder(int id)
         {
             RestRequest request = new("Folder/{id}", Method.Delete);
             request.AddParameter("id", id, ParameterType.UrlSegment);

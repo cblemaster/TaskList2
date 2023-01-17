@@ -11,4 +11,8 @@
     <Folder Include="Windows\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\TaskList2.Services\TaskList2.Services.csproj" />
+  </ItemGroup>
+
 </Project>
