@@ -13,3 +13,5 @@ namespace TaskList2.UI.WPF
         }
     }
 }
+
+// TODO: Verbiage for folder delete: "Delete this folder and everything in it? (Yes/No)"

@@ -12,8 +12,6 @@
     </UserControl.DataContext>
     <Grid>
         <Grid x:Name="grdMain"
-              Width="auto"
-              Height="auto"
               Style="{StaticResource BasicGridStyle}">
             <Grid.RowDefinitions>
                 <RowDefinition Height="auto" />
@@ -27,13 +25,12 @@
                    x:Name="lblFolderName"
                    Grid.Row="0"
                    Grid.Column="0"
-                   Style="{StaticResource BasicLabelStyle}" HorizontalAlignment="Right" />
+                   Style="{StaticResource BasicLabelStyle}" />
             <TextBox Text="{Binding Folder.FolderName}"
                      x:Name="txtFolderName"
                      Grid.Row="0"
                      Grid.Column="1"
                      MaxLength="100"
-                     Width="auto"
                      HorizontalAlignment="Stretch"
                      Style="{StaticResource BasicTextBoxStyle}" />
             <StackPanel x:Name="spButtons"
@@ -41,8 +38,7 @@
                         Grid.Row="1"
                         FlowDirection="LeftToRight"
                         Orientation="Horizontal"
-                        Margin="3 3 3 3"
-                        HorizontalAlignment="Stretch">
+                        Style="{StaticResource BasicStackPanelStyle}">
                 <Button x:Name="btnUpdate"
                         Content="Update"
                         Style="{StaticResource BasicButtonStyle}" />

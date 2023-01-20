@@ -5,11 +5,22 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:TaskList2.UI.WPF"
         xmlns:localfolderviews="clr-namespace:TaskList2.UI.WPF.Views.Folders"
+        xmlns:localtaskviews="clr-namespace:TaskList2.UI.WPF.Views.Tasks"
         mc:Ignorable="d"
         Title="MainWindow"
-        Height="500"
-        Width="900">
+        Height="700"
+        Width="1490">
     <Grid>
-        <localfolderviews:FolderListView />
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="600" />
+            <ColumnDefinition Width="500" />
+            <ColumnDefinition Width="390" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="700" />
+        </Grid.RowDefinitions>
+        <localfolderviews:FolderListView Grid.Column="0" Grid.Row="0" />
+        <localtaskviews:TaskListView Grid.Column="1" Grid.Row="0" />
+        <localfolderviews:AddUpdateFolderView Grid.Column="2" Grid.Row="0" />
     </Grid>
 </Window>

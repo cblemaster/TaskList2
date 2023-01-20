@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TaskList2.Services.Models;
 using TaskList2.Services;
+using TaskList2.Services.Models;
 using Task = TaskList2.Services.Models.Task;
 
 namespace TaskList2.UI.WPF.Views.Folders
