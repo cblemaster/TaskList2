@@ -4,23 +4,13 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:TaskList2.UI.WPF.Views"
-             xmlns:localmodels="clr-namespace:TaskList2.Services.Models;assembly=TaskList2.Services"
-             xmlns:sys="clr-namespace:System;assembly=mscorlib"
+             xmlns:localtasks="clr-namespace:TaskList2.UI.WPF.Views.Tasks"
              mc:Ignorable="d"
              d:DesignHeight="450"
              d:DesignWidth="800">
     <UserControl.DataContext>
         <local:MasterDetailsViewModel />
     </UserControl.DataContext>
-    <UserControl.Resources>
-        <ObjectDataProvider x:Key="dataFromRecurrenceEnum"
-                            MethodName="GetValues"
-                            ObjectType="{x:Type sys:Enum}">
-            <ObjectDataProvider.MethodParameters>
-                <x:Type TypeName="localmodels:Recurrence" />
-            </ObjectDataProvider.MethodParameters>
-        </ObjectDataProvider>
-    </UserControl.Resources>
     <Grid>
         <Grid x:Name="grdMain">
             <Grid.RowDefinitions>
@@ -147,124 +137,10 @@
             <Border Grid.Column="2"
                     BorderThickness="0,1,1,1"
                     BorderBrush="#FF828790" />
-            <Grid x:Name="grdTaskDetails"
-                  Grid.Column="2">
-                <Grid.RowDefinitions>
-                    <RowDefinition />
-                    <RowDefinition />
-                    <RowDefinition />
-                    <RowDefinition />
-                    <RowDefinition />
-                    <RowDefinition />
-                    <RowDefinition />
-                    <RowDefinition />
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="3*" />
-                    <ColumnDefinition Width="7*" />
-                </Grid.ColumnDefinitions>
-                <Label Content="Id"
-                       HorizontalAlignment="Left"
-                       VerticalAlignment="Center"
-                       Visibility="Collapsed" />
-                <Label Content="Task Name"
-                       Grid.Row="1"
-                       HorizontalAlignment="Left"
-                       VerticalAlignment="Center" />
-                <Label Content="Due Date"
-                       Grid.Row="2"
-                       HorizontalAlignment="Left"
-                       VerticalAlignment="Center" />
-                <Label Content="Recurrence"
-                       HorizontalAlignment="Left"
-                       Grid.Row="3"
-                       VerticalAlignment="Center" />
-                <!--<Label Content="Is Important"
-                       Grid.Row="4"
-                       HorizontalAlignment="Left"
-                       VerticalAlignment="Center"/>
-                <Label Content="Is Complete"
-                       Grid.Row="5"
-                       HorizontalAlignment="Left"
-                       VerticalAlignment="Center"/>-->
-                <Label Content="Note"
-                       Grid.Row="6"
-                       HorizontalAlignment="Left"
-                       VerticalAlignment="Top"
-                       Margin="0,3,0,0" />
-                <TextBox x:Name="tbTaskId"
-                         Grid.Column="1"
-                         TextWrapping="NoWrap"
-                         Text="{Binding SelectedTask.Id}"
-                         HorizontalAlignment="Stretch"
-                         VerticalAlignment="Center"
-                         IsEnabled="False"
-                         Visibility="Collapsed"
-                         MaxLines="1" />
-                <TextBox x:Name="tbTaskName"
-                         Grid.Column="1"
-                         Grid.Row="1"
-                         TextWrapping="NoWrap"
-                         Text="{Binding SelectedTask.TaskName}"
-                         HorizontalAlignment="Stretch"
-                         VerticalAlignment="Center"
-                         IsEnabled="False"
-                         MaxLines="1"
-                         Margin="3,3,3,3" />
-                <DatePicker x:Name="dpDueDate"
-                            Grid.Column="1"
-                            Grid.Row="2"
-                            HorizontalAlignment="Left"
-                            VerticalAlignment="Center"
-                            IsEnabled="False"
-                            FirstDayOfWeek="Monday"
-                            IsTodayHighlighted="True"
-                            SelectedDate="{Binding SelectedTask.DueDate}"
-                            SelectedDateFormat="Short"
-                            Margin="3,3,3,3"
-                            Width="auto" />
-                <ComboBox x:Name="cboRecurrence"
-                          Grid.Column="1"
-                          Grid.Row="3"
-                          HorizontalAlignment="Left"
-                          VerticalAlignment="Center"
-                          Margin="3,3,3,3"
-                          IsEnabled="False"
-                          SelectedItem="{Binding SelectedTask.Recurrence, Mode=OneWay}"
-                          ItemsSource="{Binding Source={StaticResource dataFromRecurrenceEnum}}"
-                          Padding="0,0,0,0"
-                          Width="auto" />
-                <CheckBox x:Name="cbIsImportant"
-                          Content="Is Important"
-                          Grid.Column="1"
-                          Grid.Row="4"
-                          HorizontalAlignment="Left"
-                          VerticalAlignment="Center"
-                          IsEnabled="False"
-                          IsChecked="{Binding SelectedTask.IsImportant}"
-                          Margin="3,0,0,0" />
-                <CheckBox x:Name="cbIsComplete"
-                          Content="Is Complete"
-                          Grid.Column="1"
-                          Grid.Row="5"
-                          HorizontalAlignment="Left"
-                          VerticalAlignment="Center"
-                          IsEnabled="False"
-                          IsChecked="{Binding SelectedTask.IsComplete}"
-                          Margin="3,0,0,0" />
-                <TextBox x:Name="tbNote"
-                         Grid.Column="1"
-                         Grid.Row="6"
-                         Grid.RowSpan="2"
-                         TextWrapping="Wrap"
-                         Text="{Binding SelectedTask.Note}"
-                         HorizontalAlignment="Stretch"
-                         Margin="3,3,3,3"
-                         IsEnabled="False" />
-                         <!--MaxLines="4"
-                         Height="80"-->
-            </Grid>
+            <localtasks:TaskDetailsView Grid.Column="2"
+                                        DataContext="{Binding SelectedTask}" />
         </Grid>
+        
         <!-- AddEditFolderView-->
         <Grid x:Name="grdAddEditFolder"
               Visibility="Collapsed"
@@ -321,5 +197,10 @@
                         Click="btnCancelAddEditFolder_Click" />
             </StackPanel>
         </Grid>
+        
+        <!-- AddEditTaskView-->
+        <localtasks:TaskDetailsView Grid.Column="2"
+                                    DataContext="{Binding TaskToAddOrUpdate}"
+                                    Visibility="Collapsed" />
     </Grid>
 </UserControl>

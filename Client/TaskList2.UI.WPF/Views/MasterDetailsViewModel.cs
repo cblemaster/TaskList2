@@ -48,6 +48,7 @@ namespace TaskList2.UI.WPF.Views
         private ObservableCollection<Task> _tasks = new();
 
         private Folder _folderToAddOrUpdate = new();
+        private Task _taskToAddOrUpdate = new();
 
         public event PropertyChangedEventHandler? PropertyChanged = delegate { };
 
@@ -112,6 +113,19 @@ namespace TaskList2.UI.WPF.Views
                 {
                     _folderToAddOrUpdate = value;
                     this.PropertyChanged!(this, new PropertyChangedEventArgs(nameof(FolderToAddOrUpdate)));
+                }
+            }
+        }
+
+        public Task TaskToAddOrUpdate
+        {
+            get => _taskToAddOrUpdate;
+            set
+            {
+                if (value != _taskToAddOrUpdate)
+                {
+                    _taskToAddOrUpdate = value;
+                    this.PropertyChanged!(this, new PropertyChangedEventArgs(nameof(TaskToAddOrUpdate)));
                 }
             }
         }
