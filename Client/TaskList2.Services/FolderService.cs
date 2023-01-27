@@ -36,7 +36,7 @@ namespace TaskList2.Services
         public Folder UpdateFolder(Folder folderToUpdate)
         {
             RestRequest request = new("Folder/{id}", Method.Put) { RequestFormat = DataFormat.Json };
-            request.AddParameter("id", folderToUpdate.Id);
+            request.AddParameter("id", folderToUpdate.Id, ParameterType.UrlSegment);
             request.AddBody(folderToUpdate);
             RestResponse<Folder> response = client.Execute<Folder>(request);
             return response.Data!;

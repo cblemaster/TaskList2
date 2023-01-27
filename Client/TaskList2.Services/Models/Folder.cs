@@ -17,6 +17,12 @@ namespace TaskList2.Services.Models
 
         internal static string GetCapitalizedFolderName(string folderName)
         {
+            if (string.IsNullOrEmpty(folderName) 
+                || string.IsNullOrWhiteSpace(folderName))
+                return string.Empty;
+
+            folderName = folderName.Trim();
+            
             char firstChar = folderName[0];
 
             if (firstChar.ToString() == firstChar.ToString().ToUpper())
@@ -36,15 +42,17 @@ namespace TaskList2.Services.Models
 
         public bool IsValid()
         {
+            this.ValidationErrors = new List<ValidationError>();
+            
             this.FolderName = GetCapitalizedFolderName(FolderName);
 
             if (string.IsNullOrEmpty(this.FolderName)
                 || string.IsNullOrWhiteSpace(this.FolderName))
-                this.ValidationErrors.Add(new() { InvalidPropertyName = "FolderName", ErrorMessage = "FolderName is required." });
+                this.ValidationErrors.Add(new() { InvalidPropertyName = "FolderName", ErrorMessage = "Folder Name is required." });
             if (!IsFolderNameUnique(this.FolderName))
-                this.ValidationErrors.Add(new() { InvalidPropertyName = "FolderName", ErrorMessage = $"FolderName {this.FolderName} is already used." });
+                this.ValidationErrors.Add(new() { InvalidPropertyName = "FolderName", ErrorMessage = $"Folder Name {this.FolderName} is already used." });
             if (this.FolderName.Length > 100)
-                this.ValidationErrors.Add(new() { InvalidPropertyName = "FolderName", ErrorMessage = "Max length for FolderName is 100." });
+                this.ValidationErrors.Add(new() { InvalidPropertyName = "FolderName", ErrorMessage = "Max length for Folder Name is 100." });
 
             if (this.ValidationErrors.Any())
                 return false;

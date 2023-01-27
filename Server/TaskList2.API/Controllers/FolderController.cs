@@ -62,7 +62,7 @@ namespace TaskList2.API.Controllers
             else if (folderToUpdate.IsRenameable)
             {
                 Folder updated = _folderDAO.UpdateFolder(folderToUpdate);
-                return updated != null ? Ok(updated) : StatusCode(500); //if delete is successful, return NoContent, otherwise 500 internal server error
+                return updated != null ? Ok(updated) : StatusCode(500);
             }
             else
                 return BadRequest();
@@ -80,7 +80,7 @@ namespace TaskList2.API.Controllers
             else if (deleted.IsDeleteable)
                 success = _folderDAO.DeleteFolder(id);
 
-            return success ? NoContent() : StatusCode(500); //if delete is successful, return NoContent, otherwise 500 internal server error
+            return success ? Ok(success) : StatusCode(500);
         }
     }
 }

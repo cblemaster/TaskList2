@@ -108,7 +108,7 @@ namespace TaskList2.API.Controllers
                 return NotFound("Task not found");
 
             Task updated = _taskDAO.UpdateTask(taskToUpdate);
-            return updated != null ? Ok(updated) : StatusCode(500); //if delete is successful, return NoContent, otherwise 500 internal server error
+            return updated != null ? Ok(updated) : StatusCode(500);
         }
 
         // https://localhost:7021/Task/1
@@ -122,7 +122,7 @@ namespace TaskList2.API.Controllers
 
             bool success = _taskDAO.DeleteTask(id);
 
-            return success ? NoContent() : StatusCode(500); //if delete is successful, return NoContent, otherwise 500 internal server error
+            return success ? Ok(success) : StatusCode(500);
         }
     }
 }
