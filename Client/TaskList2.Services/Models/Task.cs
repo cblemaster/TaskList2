@@ -26,7 +26,7 @@ namespace TaskList2.Services.Models
         public bool IsValid()
         {
             if (this.TaskName.Length > 100)
-                this.ValidationErrors.Add(new() { InvalidPropertyName = "TaskName" , ErrorMessage = "Max length for TaskName is 100." });
+                this.ValidationErrors.Add(new() { InvalidPropertyName = "TaskName", ErrorMessage = "Max length for TaskName is 100." });
             if (string.IsNullOrEmpty(this.TaskName)
                 || string.IsNullOrWhiteSpace(this.TaskName))
                 this.ValidationErrors.Add(new() { InvalidPropertyName = "TaskName", ErrorMessage = "TaskName is required." });

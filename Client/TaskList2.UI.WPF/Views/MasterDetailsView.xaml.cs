@@ -1,5 +1,4 @@
 ﻿using System.Collections.ObjectModel;
-using System.Linq;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -16,7 +15,7 @@ namespace TaskList2.UI.WPF.Views
     public partial class MasterDetailsView : UserControl
     {
         public MasterDetailsView() => InitializeComponent();
-        
+
         private readonly FolderService _folderService = new();
 
         private MasterDetailsViewModel GetViewModel() => (MasterDetailsViewModel)this.DataContext;
@@ -37,11 +36,11 @@ namespace TaskList2.UI.WPF.Views
         private void lvTasks_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             MasterDetailsViewModel context = this.GetViewModel();
-            context.SelectedTask = (Task)this.lvTasks.SelectedItem;            
+            context.SelectedTask = (Task)this.lvTasks.SelectedItem;
         }
 
         private void btnAddFolder_Click(object sender, RoutedEventArgs e) => this.EnableAddEditFolderControls(isAdd: true);
-        
+
         private void btnAddFolderConf_Click(object sender, RoutedEventArgs e)
         {
             MasterDetailsViewModel context = this.GetViewModel();
@@ -102,7 +101,7 @@ namespace TaskList2.UI.WPF.Views
             this.DisableAddEditFolderControls(isAdd: isAdd);
 
             MasterDetailsViewModel context = this.GetViewModel();
-            
+
             if (isAdd)
                 context.FolderToAddOrUpdate = new();
             else
@@ -163,7 +162,7 @@ namespace TaskList2.UI.WPF.Views
                 this.btnAddFolderConf.Visibility = Visibility.Collapsed;
             else
                 this.btnRenameFolderConf.Visibility = Visibility.Collapsed;
-        }       
+        }
 
         private void ShowValidationErrors(Folder folderToValidate)
         {

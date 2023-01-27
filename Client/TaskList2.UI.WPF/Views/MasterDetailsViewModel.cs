@@ -18,7 +18,7 @@ namespace TaskList2.UI.WPF.Views
                 switch (f.FolderName)
                 {
                     case "Planned":
-                        f.Tasks= new ObservableCollection<Task>(_taskService.GetPlannedTasks());
+                        f.Tasks = new ObservableCollection<Task>(_taskService.GetPlannedTasks());
                         break;
                     case "Important":
                         f.Tasks = new ObservableCollection<Task>(_taskService.GetImportantTasks());
@@ -35,7 +35,7 @@ namespace TaskList2.UI.WPF.Views
                     default:
                         break;
                 }
-            }          
+            }
         }
 
         private readonly FolderService _folderService = new();
@@ -43,7 +43,7 @@ namespace TaskList2.UI.WPF.Views
 
         private Folder _selectedFolder = new();
         private Task _selectedTask = new();
-        
+
         private ObservableCollection<Folder> _folders = new();
         private ObservableCollection<Task> _tasks = new();
 

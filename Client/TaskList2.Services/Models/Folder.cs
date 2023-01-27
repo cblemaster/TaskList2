@@ -17,12 +17,12 @@ namespace TaskList2.Services.Models
 
         internal static string GetCapitalizedFolderName(string folderName)
         {
-            if (string.IsNullOrEmpty(folderName) 
+            if (string.IsNullOrEmpty(folderName)
                 || string.IsNullOrWhiteSpace(folderName))
                 return string.Empty;
 
             folderName = folderName.Trim();
-            
+
             char firstChar = folderName[0];
 
             if (firstChar.ToString() == firstChar.ToString().ToUpper())
@@ -43,7 +43,7 @@ namespace TaskList2.Services.Models
         public bool IsValid()
         {
             this.ValidationErrors = new List<ValidationError>();
-            
+
             this.FolderName = GetCapitalizedFolderName(FolderName);
 
             if (string.IsNullOrEmpty(this.FolderName)
