@@ -35,7 +35,8 @@
                                            Width="auto"
                                            Content="*"
                                            Foreground="Red"
-                                           FontWeight="UltraBold" />
+                                           FontWeight="UltraBold"
+                                           Visibility="Collapsed"/>
                                 </DataTemplate>
                             </GridViewColumn.CellTemplate>
                         </GridViewColumn>

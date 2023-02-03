@@ -43,6 +43,23 @@
                     Grid.Row="1"
                     HorizontalAlignment="Left"
                     VerticalAlignment="Top" />
+            <StackPanel x:Name="spTaskActionButtons"
+                        Grid.Column="2"
+                        HorizontalAlignment="Left"
+                        Orientation="Horizontal"
+                        Grid.Row="1"
+                        VerticalAlignment="Top">
+                <Button x:Name="btnSaveChangesAddTask"
+                        Content="Save Changes" />
+                <Button x:Name="btnCancelChangesAddTask"
+                        Content="Cancel" />
+                <Button x:Name="btnSaveChangesEditTask"
+                        Content="Save Changes" />
+                <Button x:Name="btnCancelChangesEditTask"
+                        Content="Cancel" />
+                <Button x:Name="btnDeleteTask"
+                        Content="Delete" />
+            </StackPanel>
         </Grid>
         <Grid x:Name="grdAddFolderView"
               Height="225"
