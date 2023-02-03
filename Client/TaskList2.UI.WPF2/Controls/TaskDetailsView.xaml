@@ -64,7 +64,8 @@
                 <Label x:Name="lblTaskNameErrors"
                        Content="*"
                        Foreground="Red"
-                       FontWeight="UltraBold" />                
+                       FontWeight="UltraBold"
+                       Visibility="Collapsed" />                
             </StackPanel>
             <DatePicker x:Name="dpDueDate"
                         Grid.Column="1"
@@ -122,7 +123,8 @@
                 <Label x:Name="lblNoteErrors"
                        Content="*"
                        Foreground="Red"
-                       FontWeight="UltraBold" />
+                       FontWeight="UltraBold"
+                       Visibility="Collapsed" />
             </StackPanel>
         </Grid>
     </Grid>

@@ -31,12 +31,7 @@
                     BorderBrush="#FF828790" />
             <controls:TaskDetailsView Grid.Column="2"
                                       x:Name="taskDetailsView" />
-            <Grid Height="225"
-                  Width="400"
-                  Grid.ColumnSpan="3"
-                  Grid.RowSpan="2">
-                <controls:AddFolderView />
-            </Grid>
+            
             <Button x:Name="btnAddFolder"
                     Content="Add Folder"
                     Grid.Row="1"
@@ -48,6 +43,14 @@
                     Grid.Row="1"
                     HorizontalAlignment="Left"
                     VerticalAlignment="Top" />
+        </Grid>
+        <Grid x:Name="grdAddFolderView"
+              Height="225"
+              Width="400"
+              Grid.ColumnSpan="3"
+              Grid.RowSpan="2"
+              Visibility="Collapsed">
+            <controls:AddFolderView />
         </Grid>
     </Grid>
 </Window>

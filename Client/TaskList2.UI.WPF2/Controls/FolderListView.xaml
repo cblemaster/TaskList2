@@ -22,7 +22,8 @@
                                              TextWrapping="NoWrap"
                                              HorizontalAlignment="Stretch"
                                              Width="190"
-                                             Text="{Binding FolderName}" />
+                                             Text="{Binding FolderName}"
+                                             IsEnabled="False"/>
                                 </DataTemplate>
                             </GridViewColumn.CellTemplate>
                         </GridViewColumn>
