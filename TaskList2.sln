@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TaskList2.API", "Server\Tas
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TaskList2.Services", "Client\TaskList2.Services\TaskList2.Services.csproj", "{1A02B7B4-41BB-4623-8773-065AFA316EE1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TaskList2.UI.WPF", "Client\TaskList2.UI.WPF\TaskList2.UI.WPF.csproj", "{93826E0B-3A90-46E8-A7CD-F19CB9269005}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TaskList2.UI.WPF2", "Client\TaskList2.UI.WPF2\TaskList2.UI.WPF2.csproj", "{A237D213-947E-4A87-8D0B-FA890A3D726B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -29,10 +29,10 @@ Global
 		{1A02B7B4-41BB-4623-8773-065AFA316EE1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1A02B7B4-41BB-4623-8773-065AFA316EE1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1A02B7B4-41BB-4623-8773-065AFA316EE1}.Release|Any CPU.Build.0 = Release|Any CPU
-		{93826E0B-3A90-46E8-A7CD-F19CB9269005}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{93826E0B-3A90-46E8-A7CD-F19CB9269005}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{93826E0B-3A90-46E8-A7CD-F19CB9269005}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{93826E0B-3A90-46E8-A7CD-F19CB9269005}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A237D213-947E-4A87-8D0B-FA890A3D726B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A237D213-947E-4A87-8D0B-FA890A3D726B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A237D213-947E-4A87-8D0B-FA890A3D726B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A237D213-947E-4A87-8D0B-FA890A3D726B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
