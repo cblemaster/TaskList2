@@ -31,7 +31,7 @@ namespace TaskList2.UI.WPF2
                             folder.Tasks = 
                                 new ObservableCollection<Task>
                                     (_taskService.GetPlannedTasks()
-                                    .OrderBy(t => t.DueDate)
+                                    .OrderBy(t => t.DueDate)    // TODO: Fix this sorting; I think the null due dates are screwing up the sort
                                     .ThenBy(t => t.TaskName));
                             break;
                         case "Important":

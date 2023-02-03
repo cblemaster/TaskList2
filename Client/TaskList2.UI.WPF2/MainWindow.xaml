@@ -23,20 +23,31 @@
                 <RowDefinition Height="8*" />
                 <RowDefinition Height="2*" />
             </Grid.RowDefinitions>
-            <controls:FolderListView x:Name="folderListView">
-                <!--<controls:FolderListView.DataContext>
-                    <local:MainWindowViewModel S
-                    <Binding Source="{StaticResource local:context}"
-                             Path="Folders" />
-                </controls:FolderListView.DataContext>--> 
-            </controls:FolderListView>
+            <controls:FolderListView x:Name="folderListView" />
             <controls:TaskListView Grid.Column="1"
-                                   x:Name="taskListView"/>
+                                   x:Name="taskListView" />
             <Border Grid.Column="2"
                     BorderThickness="0,1,1,1"
                     BorderBrush="#FF828790" />
             <controls:TaskDetailsView Grid.Column="2"
-                                      x:Name="taskDetailsView"/>
+                                      x:Name="taskDetailsView" />
+            <Grid Height="225"
+                  Width="400"
+                  Grid.ColumnSpan="3"
+                  Grid.RowSpan="2">
+                <controls:AddFolderView />
+            </Grid>
+            <Button x:Name="btnAddFolder"
+                    Content="Add Folder"
+                    Grid.Row="1"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Top" />
+            <Button x:Name="btnAddTask"
+                    Content="Add Task"
+                    Grid.Column="1"
+                    Grid.Row="1"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Top" />
         </Grid>
     </Grid>
 </Window>

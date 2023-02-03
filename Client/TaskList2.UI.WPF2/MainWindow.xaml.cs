@@ -20,7 +20,7 @@ namespace TaskList2.UI.WPF2
             this.taskListView.lvTaskList.SelectedItem = null;
         }
 
-        private MainWindowViewModel _context = new();
+        private readonly MainWindowViewModel _context = new();
 
         private void lvFolderList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -29,11 +29,9 @@ namespace TaskList2.UI.WPF2
             this.taskListView.lvTaskList.SelectionChanged += this.lvTaskList_SelectionChanged;
         }
 
-        private void lvTaskList_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
+        private void lvTaskList_SelectionChanged(object sender, SelectionChangedEventArgs e) =>
             // TODO: Get this into xaml as binding
             this.taskDetailsView.DataContext = this.taskListView.lvTaskList.SelectedItem as Task;
-        }
-        
+
     }
 }
