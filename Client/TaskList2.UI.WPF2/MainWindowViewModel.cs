@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using TaskList2.Services;
 using TaskList2.Services.Models;
 using Task = TaskList2.Services.Models.Task;
@@ -13,9 +9,10 @@ namespace TaskList2.UI.WPF2
 {
     public class MainWindowViewModel : INotifyPropertyChanged
     {
+        #region ctor
         public MainWindowViewModel()
         {
-            this.Folders = 
+            this.Folders =
                 new ObservableCollection<Folder>
                     (_folderService.GetFolders()
                     .OrderBy(f => f.IsRenameable)
@@ -28,7 +25,7 @@ namespace TaskList2.UI.WPF2
                     switch (folder.FolderName)
                     {
                         case "Planned":
-                            folder.Tasks = 
+                            folder.Tasks =
                                 new ObservableCollection<Task>
                                     (_taskService.GetPlannedTasks()
                                     .OrderBy(t => t.DueDate)    // TODO: Fix this sorting; I think the null due dates are screwing up the sort
@@ -59,16 +56,22 @@ namespace TaskList2.UI.WPF2
                             break;
                     }
                 }
-            }            
+            }
         }
-        
+        #endregion
+
+        #region fields
         private readonly FolderService _folderService = new();
         private readonly TaskService _taskService = new();
 
         private ObservableCollection<Folder> _folders = new();
+        #endregion
 
+        #region events
         public event PropertyChangedEventHandler? PropertyChanged = delegate { };
-        
+        #endregion
+
+        #region properties
         public ObservableCollection<Folder> Folders
         {
             get => _folders;
@@ -78,8 +81,9 @@ namespace TaskList2.UI.WPF2
                 {
                     _folders = value;
                     this.PropertyChanged!(this, new PropertyChangedEventArgs(nameof(Folders)));
-                }                
+                }
             }
         }
+        #endregion
     }
 }

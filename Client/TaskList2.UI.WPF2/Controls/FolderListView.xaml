@@ -54,7 +54,7 @@
                                                 Content="Delete" />
                                         <Button x:Name="btnRenameFolderConf"
                                                 Content="Rename" />
-                                        <Button x:Name="btnCancelRenameFolder"
+                                        <Button x:Name="btnCancel"
                                                 Content="Cancel" />
                                     </StackPanel>
                                 </DataTemplate>

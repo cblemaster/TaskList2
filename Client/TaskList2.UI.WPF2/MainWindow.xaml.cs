@@ -1,7 +1,6 @@
 ﻿using System.Windows;
-using TaskList2.Services.Models;
-using TaskList2.UI.WPF2.Controls;
 using System.Windows.Controls;
+using TaskList2.Services.Models;
 
 namespace TaskList2.UI.WPF2
 {
@@ -10,6 +9,7 @@ namespace TaskList2.UI.WPF2
     /// </summary>
     public partial class MainWindow : Window
     {
+        #region ctor
         public MainWindow()
         {
             InitializeComponent();
@@ -19,9 +19,13 @@ namespace TaskList2.UI.WPF2
             this.folderListView.lvFolderList.SelectionChanged += this.lvFolderList_SelectionChanged;
             this.taskListView.lvTaskList.SelectedItem = null;
         }
+        #endregion
 
+        #region fields
         private readonly MainWindowViewModel _context = new();
+        #endregion
 
+        #region ui_events
         private void lvFolderList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             // TODO: Get this into xaml as binding
@@ -32,6 +36,6 @@ namespace TaskList2.UI.WPF2
         private void lvTaskList_SelectionChanged(object sender, SelectionChangedEventArgs e) =>
             // TODO: Get this into xaml as binding
             this.taskDetailsView.DataContext = this.taskListView.lvTaskList.SelectedItem as Task;
-
+        #endregion
     }
 }

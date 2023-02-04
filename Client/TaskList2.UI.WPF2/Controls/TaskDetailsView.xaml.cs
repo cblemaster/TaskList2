@@ -7,9 +7,8 @@ namespace TaskList2.UI.WPF2.Controls
     /// </summary>
     public partial class TaskDetailsView : UserControl
     {
-        public TaskDetailsView()
-        {
-            InitializeComponent();
-        }
+        #region ctor
+        public TaskDetailsView() => InitializeComponent();
+        #endregion
     }
 }
