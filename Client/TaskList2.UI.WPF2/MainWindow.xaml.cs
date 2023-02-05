@@ -1,4 +1,8 @@
-﻿using System.Windows;
+﻿// Business rules:
+// 1. Completed tasks cannot be edited
+// 2. 
+
+using System.Windows;
 using System.Windows.Controls;
 using TaskList2.Services.Models;
 using TaskList2.UI.WPF2.Controls;
@@ -22,7 +26,11 @@ namespace TaskList2.UI.WPF2
             
             this.folderListView.lvFolderList.SelectionChanged += this.lvFolderList_SelectionChanged;
             this.taskListView.lvTaskList.SelectionChanged += this.lvTaskList_SelectionChanged;
-        }
+
+            this.btnAddFolder.Click += this.btnAddFolder_Click;
+            this.addFolderView.btnAdd.Click += this.btnAdd_Click;
+            this.addFolderView.btnCancel.Click += this.btnCancel_Click;
+        }        
         #endregion
 
         #region fields
@@ -53,6 +61,28 @@ namespace TaskList2.UI.WPF2
                     this.DisableTaskDetailViewControls();
             //}
         }
+
+        private void btnAddFolder_Click(object sender, RoutedEventArgs e)
+        {
+            this.grdMain.Visibility = Visibility.Collapsed;
+            this.grdAddFolderView.Visibility = Visibility.Visible;
+        }
+
+        private void btnAdd_Click(object sender, RoutedEventArgs e)
+        {
+            this.grdMain.Visibility = Visibility.Visible;
+            this.grdAddFolderView.Visibility = Visibility.Collapsed;
+        }
+
+        private void btnCancel_Click(object sender, RoutedEventArgs e)
+        {
+            this.grdMain.Visibility = Visibility.Visible;
+            this.grdAddFolderView.Visibility = Visibility.Collapsed;
+        }
+        
+        
+        
+        
         #endregion
 
         #region methods

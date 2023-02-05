@@ -78,8 +78,8 @@
               Width="400"
               Grid.ColumnSpan="3"
               Grid.RowSpan="2"
-              Visibility="Visible">
-            <controls:AddFolderView />
+              Visibility="Collapsed">
+            <controls:AddFolderView x:Name="addFolderView" />
         </Grid>
     </Grid>
 </Window>
