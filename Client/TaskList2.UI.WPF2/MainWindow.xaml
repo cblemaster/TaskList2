@@ -9,10 +9,12 @@
         Title="MainWindow"
         Height="450"
         Width="800">
+    <!-- Data context -->
     <Window.DataContext>
         <local:MainWindowViewModel x:Name="context" />
     </Window.DataContext>
     <Grid>
+        <!-- Main grid -->
         <Grid x:Name="grdMain">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition />
@@ -23,15 +25,22 @@
                 <RowDefinition Height="8*" />
                 <RowDefinition Height="2*" />
             </Grid.RowDefinitions>
+            
+            <!-- Folder list view -->
             <controls:FolderListView x:Name="folderListView" />
+            
+            <!-- Task list view -->
             <controls:TaskListView Grid.Column="1"
                                    x:Name="taskListView" />
+            
             <Border Grid.Column="2"
                     BorderThickness="0,1,1,1"
                     BorderBrush="#FF828790" />
+            <!-- Task details view -->
             <controls:TaskDetailsView Grid.Column="2"
                                       x:Name="taskDetailsView" />
             
+            <!-- Add folder and Add task buttons -->
             <Button x:Name="btnAddFolder"
                     Content="Add Folder"
                     Grid.Row="1"
@@ -43,6 +52,7 @@
                     Grid.Row="1"
                     HorizontalAlignment="Left"
                     VerticalAlignment="Top" />
+            <!-- Task action buttons -->
             <StackPanel x:Name="spTaskActionButtons"
                         Grid.Column="2"
                         HorizontalAlignment="Left"
@@ -61,6 +71,8 @@
                         Content="Delete" />
             </StackPanel>
         </Grid>
+        
+        <!-- Add folder grid -->
         <Grid x:Name="grdAddFolderView"
               Height="225"
               Width="400"

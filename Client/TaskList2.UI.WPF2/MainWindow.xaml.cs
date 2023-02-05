@@ -1,6 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 using TaskList2.Services.Models;
+using TaskList2.UI.WPF2.Controls;
 
 namespace TaskList2.UI.WPF2
 {
@@ -13,11 +14,14 @@ namespace TaskList2.UI.WPF2
         public MainWindow()
         {
             InitializeComponent();
+            
             // TODO: Get this into xaml as binding
             this._context = (this.DataContext as MainWindowViewModel)!;
+            
             this.folderListView.lvFolderList.ItemsSource = this._context.Folders;
+            
             this.folderListView.lvFolderList.SelectionChanged += this.lvFolderList_SelectionChanged;
-            this.taskListView.lvTaskList.SelectedItem = null;
+            this.taskListView.lvTaskList.SelectionChanged += this.lvTaskList_SelectionChanged;
         }
         #endregion
 
@@ -26,16 +30,53 @@ namespace TaskList2.UI.WPF2
         #endregion
 
         #region ui_events
+        // TODO: Get this into xaml as binding
         private void lvFolderList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            // TODO: Get this into xaml as binding
             this.taskListView.lvTaskList.ItemsSource = (this.folderListView.lvFolderList.SelectedItem as Folder)!.Tasks;
-            this.taskListView.lvTaskList.SelectionChanged += this.lvTaskList_SelectionChanged;
+            this.taskListView.lvTaskList.SelectedItem = null;
         }
 
-        private void lvTaskList_SelectionChanged(object sender, SelectionChangedEventArgs e) =>
+        private void lvTaskList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            // first need to re-enable the task detail view controls
+            //  since the controls might have been previously 
+            //  disabled for displaying a completed task
+            this.EnableTaskDetailViewControls();
+            
             // TODO: Get this into xaml as binding
-            this.taskDetailsView.DataContext = this.taskListView.lvTaskList.SelectedItem as Task;
+            Task? t = this.taskListView.lvTaskList.SelectedItem as Task;
+            //if (t != null)
+            //{
+                this.taskDetailsView.DataContext = t;
+                if (t != null && t.IsComplete)
+                    this.DisableTaskDetailViewControls();
+            //}
+        }
+        #endregion
+
+        #region methods
+        private void EnableTaskDetailViewControls()
+        {
+            TaskDetailsView tlv = this.taskDetailsView;
+            tlv.tbTaskName.IsEnabled = true;
+            tlv.dpDueDate.IsEnabled = true;
+            tlv.cboRecurrence.IsEnabled = true;
+            tlv.cbIsImportant.IsEnabled = true;
+            tlv.cbIsComplete.IsEnabled = true;
+            tlv.tbNote.IsEnabled = true;
+        }
+
+        private void DisableTaskDetailViewControls()
+        {
+            TaskDetailsView tlv = this.taskDetailsView;
+            tlv.tbTaskName.IsEnabled = false;
+            tlv.dpDueDate.IsEnabled = false;
+            tlv.cboRecurrence.IsEnabled = false;
+            tlv.cbIsImportant.IsEnabled = false;
+            tlv.cbIsComplete.IsEnabled = false;
+            tlv.tbNote.IsEnabled = false;
+        }
         #endregion
     }
 }
