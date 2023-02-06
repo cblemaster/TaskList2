@@ -49,13 +49,17 @@
                                                 Orientation="Horizontal"
                                                 Grid.Column="2">
                                         <Button x:Name="btnRenameFolder"
-                                                Content="Rename" />
+                                                Content="Rename"
+                                                Visibility="Collapsed"/>
                                         <Button x:Name="btnDeleteFolder"
-                                                Content="Delete" />
+                                                Content="Delete"
+                                                Visibility="Collapsed"/>
                                         <Button x:Name="btnRenameFolderConf"
-                                                Content="Rename" />
+                                                Content="Rename"
+                                                Visibility="Collapsed"/>
                                         <Button x:Name="btnCancel"
-                                                Content="Cancel" />
+                                                Content="Cancel"
+                                                Visibility="Collapsed"/>
                                     </StackPanel>
                                 </DataTemplate>
                             </GridViewColumn.CellTemplate>
