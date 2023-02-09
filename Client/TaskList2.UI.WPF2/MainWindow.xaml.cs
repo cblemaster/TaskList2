@@ -165,31 +165,6 @@ namespace TaskList2.UI.WPF2
             tlv.tbNote.IsEnabled = false;
         }
 
-        private Button GetButtonFromContainerByName(DependencyObject container, string buttonName)
-            => (AllChildren(container).FirstOrDefault(c => c is Button && c.Name == buttonName) as Button)!;
-
-        //https://dzone.com/articles/how-access-named-control
-        private List<Control> AllChildren(DependencyObject parent)
-        {
-            List<Control> controlList = new();
-            for (int i = 0; i < VisualTreeHelper.GetChildrenCount(parent); i++)
-            {
-                DependencyObject child = VisualTreeHelper.GetChild(parent, i);
-                if (child is Control)
-                {
-                    controlList.Add((child as Control)!);
-                }
-                controlList.AddRange(AllChildren(child));
-            }
-            return controlList;
-        }
-
-        private static void SetVisibilityForListOfControls(List<ContentControl> controls, Visibility visibility)
-        {
-            foreach (ContentControl control in controls)
-                control.Visibility = visibility;
-        }
-
         private void ConfigureFolderRenameAndDeleteButtons(Folder folder)
         {
             DependencyObject container = this.folderListView.lvFolderList.ItemContainerGenerator.ContainerFromItem(folder);
@@ -298,6 +273,31 @@ namespace TaskList2.UI.WPF2
 
             this.folderListView.IsEnabled = true;
             this.taskListView.IsEnabled = true;
+        }
+
+        private Button GetButtonFromContainerByName(DependencyObject container, string buttonName)
+            => (AllChildren(container).FirstOrDefault(c => c is Button && c.Name == buttonName) as Button)!;
+
+        //https://dzone.com/articles/how-access-named-control
+        private List<Control> AllChildren(DependencyObject parent)
+        {
+            List<Control> controlList = new();
+            for (int i = 0; i < VisualTreeHelper.GetChildrenCount(parent); i++)
+            {
+                DependencyObject child = VisualTreeHelper.GetChild(parent, i);
+                if (child is Control)
+                {
+                    controlList.Add((child as Control)!);
+                }
+                controlList.AddRange(AllChildren(child));
+            }
+            return controlList;
+        }
+
+        private static void SetVisibilityForListOfControls(List<ContentControl> controls, Visibility visibility)
+        {
+            foreach (ContentControl control in controls)
+                control.Visibility = visibility;
         }
         #endregion
     }
