@@ -2,6 +2,7 @@
 // 1. Completed tasks cannot be edited
 // 2. 
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
@@ -32,8 +33,12 @@ namespace TaskList2.UI.WPF2
 
             this.btnAddFolder.Click += this.btnAddFolder_Click;
             this.addFolderView.btnAdd.Click += this.btnAddFolderConf_Click;
-            this.addFolderView.btnCancel.Click += this.btnCancelAddFolder_Click;            
-        }        
+            this.addFolderView.btnCancel.Click += this.btnCancelAddFolder_Click;
+
+            this.btnAddTask.Click += this.btnAddTask_Click;
+            this.btnSaveChangesAddTask.Click += this.btnSaveChangesAddTask_Click;
+            this.btnCancelChangesAddTask.Click += this.btnCancelChangesAddTask_Click;
+        }     
         #endregion
 
         #region fields
@@ -114,6 +119,27 @@ namespace TaskList2.UI.WPF2
         }
 
         private void btnDeleteFolder_Click(object sender, RoutedEventArgs e) => throw new System.NotImplementedException();
+
+        private void btnAddTask_Click(object sender, RoutedEventArgs e)
+        {
+            //unshow controls that are unrelated to adding a task
+            ConfigureControlsWhileAddingTask();
+            
+            //set datacontext for taskdetailsview to new Task that will be added
+            this.taskDetailsView.DataContext = new Task();
+        }
+        
+        private void btnSaveChangesAddTask_Click(object sender, RoutedEventArgs e)
+        {
+            ConfigureControlsAfterAddingTask();
+            this.taskDetailsView.DataContext = this.taskListView.lvTaskList.SelectedItem as Task;
+        }
+
+        private void btnCancelChangesAddTask_Click(object sender, RoutedEventArgs e)
+        {
+            ConfigureControlsAfterAddingTask();
+            this.taskDetailsView.DataContext = this.taskListView.lvTaskList.SelectedItem as Task;
+        }
         #endregion
 
         #region methods
@@ -254,6 +280,24 @@ namespace TaskList2.UI.WPF2
 
             SetVisibilityForListOfControls(buttonsToShow, Visibility.Visible);
             SetVisibilityForListOfControls(buttonsToUnShow, Visibility.Collapsed);
+        }
+
+        private void ConfigureControlsWhileAddingTask()
+        {
+            SetVisibilityForListOfControls(new List<ContentControl>() { this.btnAddFolder, this.btnAddTask }, Visibility.Collapsed);
+            SetVisibilityForListOfControls(new List<ContentControl>() { this.btnSaveChangesAddTask, this.btnCancelChangesAddTask }, Visibility.Visible);
+
+            this.folderListView.IsEnabled = false;
+            this.taskListView.IsEnabled = false;
+        }
+
+        private void ConfigureControlsAfterAddingTask()
+        {
+            SetVisibilityForListOfControls(new List<ContentControl>() { this.btnAddFolder, this.btnAddTask }, Visibility.Visible);
+            SetVisibilityForListOfControls(new List<ContentControl>() { this.btnSaveChangesAddTask, this.btnCancelChangesAddTask }, Visibility.Collapsed);
+
+            this.folderListView.IsEnabled = true;
+            this.taskListView.IsEnabled = true;
         }
         #endregion
     }

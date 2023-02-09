@@ -60,15 +60,20 @@
                         Grid.Row="1"
                         VerticalAlignment="Top">
                 <Button x:Name="btnSaveChangesAddTask"
-                        Content="Save Changes" />
+                        Content="Save Changes"
+                        Visibility="Collapsed" />
                 <Button x:Name="btnCancelChangesAddTask"
-                        Content="Cancel" />
+                        Content="Cancel"
+                        Visibility="Collapsed" />
                 <Button x:Name="btnSaveChangesEditTask"
-                        Content="Save Changes" />
+                        Content="Save Changes"
+                        Visibility="Collapsed" />
                 <Button x:Name="btnCancelChangesEditTask"
-                        Content="Cancel" />
+                        Content="Cancel"
+                        Visibility="Collapsed" />
                 <Button x:Name="btnDeleteTask"
-                        Content="Delete" />
+                        Content="Delete"
+                        Visibility="Collapsed" />
             </StackPanel>
         </Grid>
         
