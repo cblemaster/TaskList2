@@ -1,6 +1,14 @@
 ﻿// Business rules:
-// 1. Completed tasks cannot be edited
-// 2. 
+// 1. Completed tasks cannot be edited - OK
+// 2. These folders cannot be renamed: Planned, Completed, Recurring, Important, Tasks - OK
+// 3. These folders cannot be deleted: Planned, Completed, Recurring, Important, Tasks - OK
+// 4. Tasks cannot be added directly to these folders: Planned, Completed, Recurring, Important - OK
+// 5. Summary of the Planned, Completed, Recurring, Important, Tasks folder contents:
+//    5.a. Planned contains all tasks that have a DueDate
+//    5.b. Completed contains all tasks where IsComplete = true
+//    5.c. Recurring contains all tasks where Recurrence != None
+//    5.d. Important contains all tasks where IsImportant = true
+//    5.e. Tasks is the default folder and can have Tasks added to it
 
 using System.Collections.Generic;
 using System.Linq;
@@ -64,6 +72,21 @@ namespace TaskList2.UI.WPF2
 
             //show folder rename and delete buttons in folderlistview for selected item
             ConfigureFolderRenameAndDeleteButtons(selectedFolder);
+            
+            //show Add Task button only if appropriate for selected folder
+            //cannot add tasks directly to Planned, Recurring, Important, or Completed folders
+            switch (selectedFolder.FolderName)
+            {
+                case "Planned":
+                case "Recurring":
+                case "Important":
+                case "Completed":
+                    this.btnAddTask.Visibility = Visibility.Collapsed;
+                    break;
+                default:
+                    this.btnAddTask.Visibility = Visibility.Visible;
+                    break;
+            }
         }
 
         private void lvTaskList_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -255,10 +278,22 @@ namespace TaskList2.UI.WPF2
             Button btnRenameFolder = this.GetButtonFromContainerByName(container, "btnRenameFolder");
             Button btnDeleteFolder = this.GetButtonFromContainerByName(container, "btnDeleteFolder");
 
-            buttonsToShow.AddRange(new List<ContentControl>() { btnRenameFolder, btnDeleteFolder, btnAddFolder, btnAddTask });
+            buttonsToShow.AddRange(new List<ContentControl>() { btnRenameFolder, btnDeleteFolder, btnAddFolder });
             if (this.taskListView.lvTaskList.SelectedItem is Task && (this.taskListView.lvTaskList.SelectedItem as Task)!.Id > 0)
-            {
                 buttonsToShow.Add(btnDeleteTask);
+            //show Add Task button only if appropriate for selected folder
+            //cannot add tasks directly to Planned, Recurring, Important, or Completed folders
+            switch (folder.FolderName)
+            {
+                case "Planned":
+                case "Recurring":
+                case "Important":
+                case "Completed":
+                    buttonsToUnShow.Add(this.btnAddTask);
+                    break;
+                default:
+                    buttonsToShow.Add(this.btnAddTask);
+                    break;
             }
 
             this.taskListView.IsEnabled = true;
@@ -279,7 +314,21 @@ namespace TaskList2.UI.WPF2
 
         private void ConfigureControlsAfterAddingTask()
         {
-            SetVisibilityForListOfControls(new List<ContentControl>() { this.btnAddFolder, this.btnAddTask }, Visibility.Visible);
+            SetVisibilityForListOfControls(new List<ContentControl>() { this.btnAddFolder }, Visibility.Visible);
+            //show Add Task button only if appropriate for selected folder
+            //cannot add tasks directly to Planned, Recurring, Important, or Completed folders
+            switch ((this.taskListView.lvTaskList.SelectedItem as Folder)!.FolderName) //TODO: CanHaveTasksAdded should be a property of folder that is defined in the db
+            {
+                case "Planned":
+                case "Recurring":
+                case "Important":
+                case "Completed":
+                    SetVisibilityForListOfControls(new List<ContentControl>() { this.btnAddTask }, Visibility.Collapsed);
+                    break;
+                default:
+                    SetVisibilityForListOfControls(new List<ContentControl>() { this.btnAddTask }, Visibility.Visible);
+                    break;
+            }
             SetVisibilityForListOfControls(new List<ContentControl>() { this.btnSaveChangesAddTask, this.btnCancelChangesAddTask }, Visibility.Collapsed);
 
             this.folderListView.IsEnabled = true;
