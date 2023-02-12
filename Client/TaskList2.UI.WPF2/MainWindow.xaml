@@ -38,7 +38,8 @@
                     BorderBrush="#FF828790" />
             <!-- Task details view -->
             <controls:TaskDetailsView Grid.Column="2"
-                                      x:Name="taskDetailsView" />
+                                      x:Name="taskDetailsView"
+                                      IsEnabled="False" />
             
             <!-- Add folder and Add task buttons -->
             <Button x:Name="btnAddFolder"
@@ -51,7 +52,8 @@
                     Grid.Column="1"
                     Grid.Row="1"
                     HorizontalAlignment="Left"
-                    VerticalAlignment="Top" />
+                    VerticalAlignment="Top"
+                    Visibility="Collapsed" />
             <!-- Task action buttons -->
             <StackPanel x:Name="spTaskActionButtons"
                         Grid.Column="2"
