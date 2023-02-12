@@ -44,8 +44,8 @@ namespace TaskList2.UI.WPF2
 
             this.btnAddTask.Click += this.btnAddTask_Click;
             this.btnSaveChangesAddTask.Click += this.btnSaveChangesAddTask_Click;
-            this.btnCancelChangesAddTask.Click += this.btnCancelChangesAddTask_Click;
-        }     
+            this.btnCancelChangesAddTask.Click += this.btnCancelChangesAddTask_Click;            
+        }
         #endregion
 
         #region fields
@@ -96,19 +96,46 @@ namespace TaskList2.UI.WPF2
             //  disabled for displaying a completed task
             this.EnableOrDisableTaskDetailViewControls(isEnabling: true);
 
+            this.taskDetailsView.tbTaskName.TextChanged -= this.tbTaskName_TextChanged;
+            this.taskDetailsView.dpDueDate.SelectedDateChanged -= this.DpDueDate_SelectedDateChanged;
+            this.taskDetailsView.cboRecurrence.SelectionChanged -= this.cboRecurrence_SelectionChanged;
+            this.taskDetailsView.cbIsImportant.Checked -= this.cbIsImportant_CheckedChanged;
+            this.taskDetailsView.cbIsImportant.Unchecked -= this.cbIsImportant_CheckedChanged;
+            this.taskDetailsView.cbIsComplete.Checked -= this.cbIsComplete_CheckedChanged;
+            this.taskDetailsView.cbIsComplete.Unchecked -= this.cbIsComplete_CheckedChanged;
+            this.taskDetailsView.tbNote.TextChanged -= this.tbNote_TextChanged;
+
+            this.btnSaveChangesEditTask.Click -= this.btnSaveChangesEditTask_Click;
+            this.btnCancelChangesEditTask.Click -= this.btnCancelChangesEditTask_Click;
+
             // TODO: Get this into xaml as binding
             Task? t = this.taskListView.lvTaskList.SelectedItem as Task;
             this.taskDetailsView.DataContext = t;
             if (t != null)
             {
                 if (t.Id > 0)
+                {
                     this.taskDetailsView.IsEnabled = true;
+                    //show the task delete button
+                    this.btnDeleteTask.Visibility = Visibility.Visible;
+                    
+                    this.taskDetailsView.tbTaskName.TextChanged += this.tbTaskName_TextChanged;
+                    this.taskDetailsView.dpDueDate.SelectedDateChanged += this.DpDueDate_SelectedDateChanged;
+                    this.taskDetailsView.cboRecurrence.SelectionChanged += this.cboRecurrence_SelectionChanged;
+                    this.taskDetailsView.cbIsImportant.Checked += this.cbIsImportant_CheckedChanged;
+                    this.taskDetailsView.cbIsImportant.Unchecked += this.cbIsImportant_CheckedChanged;
+                    this.taskDetailsView.cbIsComplete.Checked += this.cbIsComplete_CheckedChanged;
+                    this.taskDetailsView.cbIsComplete.Unchecked += this.cbIsComplete_CheckedChanged;
+                    this.taskDetailsView.tbNote.TextChanged += this.tbNote_TextChanged;
+
+                    this.btnSaveChangesEditTask.Click += this.btnSaveChangesEditTask_Click;
+                    this.btnCancelChangesEditTask.Click += this.btnCancelChangesEditTask_Click;
+                }                
                 else
                     this.taskDetailsView.IsEnabled = false;
                 if (this.taskDetailsView.IsEnabled && t.IsComplete)
                     this.EnableOrDisableTaskDetailViewControls(isEnabling: false);
-                //show the task delete button
-                this.btnDeleteTask.Visibility = Visibility.Visible;        
+                
             }                
         }
 
@@ -174,6 +201,24 @@ namespace TaskList2.UI.WPF2
             ConfigureControlsAfterAddingTask();
             this.taskDetailsView.DataContext = this.taskListView.lvTaskList.SelectedItem as Task;
         }
+
+        private void tbTaskName_TextChanged(object sender, TextChangedEventArgs e) => this.ConfigureControlsWhenEditingTask();
+        
+        private void DpDueDate_SelectedDateChanged(object? sender, SelectionChangedEventArgs e) => this.ConfigureControlsWhenEditingTask();
+
+        private void cboRecurrence_SelectionChanged(object sender, SelectionChangedEventArgs e) => this.ConfigureControlsWhenEditingTask();
+
+        private void cbIsImportant_CheckedChanged(object sender, RoutedEventArgs e) => this.ConfigureControlsWhenEditingTask();
+
+        private void cbIsComplete_CheckedChanged(object sender, RoutedEventArgs e) => this.ConfigureControlsWhenEditingTask();
+
+        private void tbNote_TextChanged(object sender, TextChangedEventArgs e) => this.ConfigureControlsWhenEditingTask();
+
+        private void btnSaveChangesEditTask_Click(object sender, RoutedEventArgs e) => this.ConfigureControlsAfterEditingTask();
+        
+        private void btnCancelChangesEditTask_Click(object sender, RoutedEventArgs e) => this.ConfigureControlsAfterEditingTask();
+
+
         #endregion
 
         #region methods
@@ -354,6 +399,41 @@ namespace TaskList2.UI.WPF2
                         break;
                 }
             }
+        }
+
+        private void ConfigureControlsWhenEditingTask()
+        {
+            List<ContentControl> buttonsToShow = new List<ContentControl>();
+            List<ContentControl> buttonsToUnShow = new List<ContentControl>();
+
+            buttonsToUnShow.AddRange(new List<ContentControl>() { btnAddFolder, btnAddTask, btnDeleteTask });
+            buttonsToShow.AddRange(new List<ContentControl>() { btnSaveChangesEditTask, btnCancelChangesEditTask });
+
+            SetVisibilityForListOfControls(buttonsToShow, Visibility.Visible);
+            SetVisibilityForListOfControls(buttonsToUnShow, Visibility.Collapsed);
+
+            this.folderListView.IsEnabled = false;
+            this.taskListView.IsEnabled = false;
+        }
+
+        private void ConfigureControlsAfterEditingTask()
+        {
+            List<ContentControl> buttonsToShow = new List<ContentControl>();
+            List<ContentControl> buttonsToUnShow = new List<ContentControl>();
+
+            buttonsToShow.AddRange(new List<ContentControl>() { btnAddFolder });
+            buttonsToUnShow.AddRange(new List<ContentControl>() { btnSaveChangesEditTask, btnCancelChangesEditTask });
+
+            if (this.taskListView.lvTaskList.SelectedItem is Task t && t.Id > 0)
+            {
+                buttonsToShow.AddRange(new List<ContentControl>() { this.btnAddTask, this.btnDeleteTask });
+            }
+
+            SetVisibilityForListOfControls(buttonsToShow, Visibility.Visible);
+            SetVisibilityForListOfControls(buttonsToUnShow, Visibility.Collapsed);
+
+            this.folderListView.IsEnabled = true;
+            this.taskListView.IsEnabled = true;
         }
 
         private Button GetButtonFromContainerByName(DependencyObject container, string buttonName)
