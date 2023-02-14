@@ -7,7 +7,8 @@
              xmlns:sys="clr-namespace:System;assembly=mscorlib"
              xmlns:localmodels="clr-namespace:TaskList2.Services.Models;assembly=TaskList2.Services"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="450"
+             d:DesignWidth="800">
     <UserControl.Resources>
         <ObjectDataProvider x:Key="dataFromRecurrenceEnum"
                             MethodName="GetValues"

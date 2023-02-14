@@ -29,12 +29,12 @@ namespace TaskList2.UI.WPF2
         public MainWindow()
         {
             InitializeComponent();
-            
+
             // TODO: Get this into xaml as binding
             this._context = (this.DataContext as MainWindowViewModel)!;
-            
-            this.folderListView.lvFolderList.ItemsSource = this._context.Folders;
-            
+
+            this.folderListView.lvFolderList.ItemsSource = this._context.Folders;   // TODO: Get this into xaml as binding
+
             this.folderListView.lvFolderList.SelectionChanged += this.lvFolderList_SelectionChanged;
             this.taskListView.lvTaskList.SelectionChanged += this.lvTaskList_SelectionChanged;
 
@@ -44,7 +44,7 @@ namespace TaskList2.UI.WPF2
 
             this.btnAddTask.Click += this.btnAddTask_Click;
             this.btnSaveChangesAddTask.Click += this.btnSaveChangesAddTask_Click;
-            this.btnCancelChangesAddTask.Click += this.btnCancelChangesAddTask_Click;            
+            this.btnCancelChangesAddTask.Click += this.btnCancelChangesAddTask_Click;
         }
         #endregion
 
@@ -53,40 +53,33 @@ namespace TaskList2.UI.WPF2
         #endregion
 
         #region ui_events
-        // TODO: Get this into xaml as binding
         private void lvFolderList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             //unshow rename and delete buttons in folderlistview
-            //they may still be visibile from the last selected item
-            if (e.RemovedItems.Count == 1 && e.RemovedItems[0] is Folder)
+            //they may still be visible from the last selected item
+            if (e.RemovedItems.Count == 1 && e.RemovedItems[0] is Folder previouslySelectedFolder)
             {
-                Folder previouslySelectedFolder = (e.RemovedItems[0] as Folder)!;
-                if (previouslySelectedFolder != null)
-                    UnconfigureFolderRenameAndDeleteButtons(previouslySelectedFolder);
+                //if (previouslySelectedFolder != null)
+                UnconfigureFolderRenameAndDeleteButtons(previouslySelectedFolder);
             }
 
             Folder selectedFolder = (this.folderListView.lvFolderList.SelectedItem as Folder)!;
-            this.taskListView.lvTaskList.ItemsSource = selectedFolder.Tasks;
+
+            this.taskListView.lvTaskList.ItemsSource = selectedFolder.Tasks;    // TODO: Get this into xaml as binding
             this.taskListView.lvTaskList.SelectedItem = null;
+
             this.btnDeleteTask.Visibility = Visibility.Collapsed;
 
             //show folder rename and delete buttons in folderlistview for selected item
             ConfigureFolderRenameAndDeleteButtons(selectedFolder);
-            
+
             //show Add Task button only if appropriate for selected folder
             //cannot add tasks directly to Planned, Recurring, Important, or Completed folders
-            switch (selectedFolder.FolderName)
+            this.btnAddTask.Visibility = selectedFolder.FolderName switch
             {
-                case "Planned":
-                case "Recurring":
-                case "Important":
-                case "Completed":
-                    this.btnAddTask.Visibility = Visibility.Collapsed;
-                    break;
-                default:
-                    this.btnAddTask.Visibility = Visibility.Visible;
-                    break;
-            }
+                "Planned" or "Recurring" or "Important" or "Completed" => Visibility.Collapsed,
+                _ => Visibility.Visible,
+            };
         }
 
         private void lvTaskList_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -118,7 +111,7 @@ namespace TaskList2.UI.WPF2
                     this.taskDetailsView.IsEnabled = true;
                     //show the task delete button
                     this.btnDeleteTask.Visibility = Visibility.Visible;
-                    
+
                     this.taskDetailsView.tbTaskName.TextChanged += this.tbTaskName_TextChanged;
                     this.taskDetailsView.dpDueDate.SelectedDateChanged += this.DpDueDate_SelectedDateChanged;
                     this.taskDetailsView.cboRecurrence.SelectionChanged += this.cboRecurrence_SelectionChanged;
@@ -130,13 +123,12 @@ namespace TaskList2.UI.WPF2
 
                     this.btnSaveChangesEditTask.Click += this.btnSaveChangesEditTask_Click;
                     this.btnCancelChangesEditTask.Click += this.btnCancelChangesEditTask_Click;
-                }                
-                else
+                }
+                else   //TODO: Is this gonna cause problems when I try to add tasks (e.g., new task with Id = 0) ??
                     this.taskDetailsView.IsEnabled = false;
                 if (this.taskDetailsView.IsEnabled && t.IsComplete)
                     this.EnableOrDisableTaskDetailViewControls(isEnabling: false);
-                
-            }                
+            }
         }
 
         private void btnAddFolder_Click(object sender, RoutedEventArgs e)
@@ -161,8 +153,8 @@ namespace TaskList2.UI.WPF2
         {
             Folder selectedFolder = (this.folderListView.lvFolderList.SelectedItem as Folder)!;
             ConfigureControlsWhileRenamingFolder(selectedFolder);
-        }        
-                
+        }
+
         private void btnRenameFolderConf_Click(object sender, RoutedEventArgs e)
         {
             //TODO: These next two (2) lines are repeated in btnCancelRenameFolder_Click()
@@ -183,11 +175,11 @@ namespace TaskList2.UI.WPF2
         {
             //unshow controls that are unrelated to adding a task
             ConfigureControlsWhileAddingTask();
-            
+
             //set datacontext for taskdetailsview to new Task that will be added
             this.taskDetailsView.DataContext = new Task();
         }
-        
+
         private void btnSaveChangesAddTask_Click(object sender, RoutedEventArgs e)
         {
             //TODO: Repeated code, same as found in btnCancelChangesAddTask_Click()
@@ -203,7 +195,7 @@ namespace TaskList2.UI.WPF2
         }
 
         private void tbTaskName_TextChanged(object sender, TextChangedEventArgs e) => this.ConfigureControlsWhenEditingTask();
-        
+
         private void DpDueDate_SelectedDateChanged(object? sender, SelectionChangedEventArgs e) => this.ConfigureControlsWhenEditingTask();
 
         private void cboRecurrence_SelectionChanged(object sender, SelectionChangedEventArgs e) => this.ConfigureControlsWhenEditingTask();
@@ -215,10 +207,8 @@ namespace TaskList2.UI.WPF2
         private void tbNote_TextChanged(object sender, TextChangedEventArgs e) => this.ConfigureControlsWhenEditingTask();
 
         private void btnSaveChangesEditTask_Click(object sender, RoutedEventArgs e) => this.ConfigureControlsAfterEditingTask();
-        
+
         private void btnCancelChangesEditTask_Click(object sender, RoutedEventArgs e) => this.ConfigureControlsAfterEditingTask();
-
-
         #endregion
 
         #region methods
@@ -227,7 +217,7 @@ namespace TaskList2.UI.WPF2
             TaskDetailsView tlv = this.taskDetailsView;
             if (isEnabling)
             {
-                
+
                 tlv.tbTaskName.IsEnabled = true;
                 tlv.dpDueDate.IsEnabled = true;
                 tlv.cboRecurrence.IsEnabled = true;
@@ -254,14 +244,14 @@ namespace TaskList2.UI.WPF2
             {
                 SetVisibilityForListOfControls(new List<ContentControl>() { btnRenameFolder }, Visibility.Visible);
                 //add click event handler for folder rename button
-                btnRenameFolder.Click += this.btnRenameFolder_Click;                
+                btnRenameFolder.Click += this.btnRenameFolder_Click;
             }
             if (folder.IsDeleteable)
             {
                 SetVisibilityForListOfControls(new List<ContentControl>() { btnDeleteFolder }, Visibility.Visible);
                 //add click event handler for folder delete button
                 btnDeleteFolder.Click += this.btnDeleteFolder_Click;
-            }         
+            }
         }
 
         private void UnconfigureFolderRenameAndDeleteButtons(Folder folder)
@@ -380,7 +370,7 @@ namespace TaskList2.UI.WPF2
 
             if (this.taskListView.lvTaskList.HasItems)
                 this.btnAddTask.Visibility = Visibility.Visible;
-            
+
             if (this.taskListView.lvTaskList.SelectedItem is Task && (this.taskListView.lvTaskList.SelectedItem as Task)!.Id > 0)
             {
                 SetVisibilityForListOfControls(new List<ContentControl>() { btnDeleteTask }, Visibility.Visible);
@@ -403,8 +393,8 @@ namespace TaskList2.UI.WPF2
 
         private void ConfigureControlsWhenEditingTask()
         {
-            List<ContentControl> buttonsToShow = new List<ContentControl>();
-            List<ContentControl> buttonsToUnShow = new List<ContentControl>();
+            List<ContentControl> buttonsToShow = new();
+            List<ContentControl> buttonsToUnShow = new();
 
             buttonsToUnShow.AddRange(new List<ContentControl>() { btnAddFolder, btnAddTask, btnDeleteTask });
             buttonsToShow.AddRange(new List<ContentControl>() { btnSaveChangesEditTask, btnCancelChangesEditTask });
@@ -418,8 +408,8 @@ namespace TaskList2.UI.WPF2
 
         private void ConfigureControlsAfterEditingTask()
         {
-            List<ContentControl> buttonsToShow = new List<ContentControl>();
-            List<ContentControl> buttonsToUnShow = new List<ContentControl>();
+            List<ContentControl> buttonsToShow = new();
+            List<ContentControl> buttonsToUnShow = new();
 
             buttonsToShow.AddRange(new List<ContentControl>() { btnAddFolder });
             buttonsToUnShow.AddRange(new List<ContentControl>() { btnSaveChangesEditTask, btnCancelChangesEditTask });

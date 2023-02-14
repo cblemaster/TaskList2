@@ -10,8 +10,7 @@
     <Grid>
         <Grid x:Name="grdFolderList">
             <ListView x:Name="lvFolderList"
-                      SelectionMode="Single"
-                      ItemsSource="{Binding}">
+                      SelectionMode="Single">
                 <ListView.View>
                     <GridView>
                         <GridViewColumn Header="Folder Name"
