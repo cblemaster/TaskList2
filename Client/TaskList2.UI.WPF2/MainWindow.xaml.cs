@@ -1,14 +1,19 @@
-﻿// Business rules:
+﻿#region business rules
+// Business rules:
 // 1. Completed tasks cannot be edited - OK
 // 2. These folders cannot be renamed: Planned, Completed, Recurring, Important, Tasks - OK
 // 3. These folders cannot be deleted: Planned, Completed, Recurring, Important, Tasks - OK
-// 4. Tasks cannot be added directly to these folders: Planned, Completed, Recurring, Important - OK
-// 5. Summary of the Planned, Completed, Recurring, Important, Tasks folder contents:
-//    5.a. Planned contains all tasks that have a DueDate
-//    5.b. Completed contains all tasks where IsComplete = true
-//    5.c. Recurring contains all tasks where Recurrence != None
-//    5.d. Important contains all tasks where IsImportant = true
-//    5.e. Tasks is the default folder and can have Tasks added to it
+// 4. Tasks cannot be added directly to these folders: Planned, Completed, Recurring, Important - OK, but needs to be in the db
+#endregion
+
+#region system folder summaries
+// Summary of the Planned, Completed, Recurring, Important, Tasks folder contents:   TODO: These could be tooltips for the folder name textbox?
+// 1. Planned contains all tasks that have a DueDate
+// 2. Completed contains all tasks where IsComplete = true
+// 3. Recurring contains all tasks where Recurrence != None
+// 4. Important contains all tasks where IsImportant = true
+// 5. Tasks is the default folder and can have Tasks added to it
+#endregion
 
 using System.Collections.Generic;
 using System.Linq;
@@ -42,6 +47,9 @@ namespace TaskList2.UI.WPF2
             this.addFolderView.btnAdd.Click += this.btnAddFolderConf_Click;
             this.addFolderView.btnCancel.Click += this.btnCancelAddFolder_Click;
 
+            //TODO: Why are these needed? Shouldn't the event handlers be added
+            // when the buttons become visibile, and the event handlers be removed
+            // when the buttons become collapsed?
             this.btnAddTask.Click += this.btnAddTask_Click;
             this.btnSaveChangesAddTask.Click += this.btnSaveChangesAddTask_Click;
             this.btnCancelChangesAddTask.Click += this.btnCancelChangesAddTask_Click;
@@ -55,15 +63,16 @@ namespace TaskList2.UI.WPF2
         #region ui_events
         private void lvFolderList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            this.taskDetailsView.IsEnabled = false;
+            
             //unshow rename and delete buttons in folderlistview
             //they may still be visible from the last selected item
             if (e.RemovedItems.Count == 1 && e.RemovedItems[0] is Folder previouslySelectedFolder)
             {
-                //if (previouslySelectedFolder != null)
                 UnconfigureFolderRenameAndDeleteButtons(previouslySelectedFolder);
             }
 
-            Folder selectedFolder = (this.folderListView.lvFolderList.SelectedItem as Folder)!;
+            Folder selectedFolder = GetListViewSelectedItemAsT<Folder>(this.folderListView.lvFolderList);
 
             this.taskListView.lvTaskList.ItemsSource = selectedFolder.Tasks;    // TODO: Get this into xaml as binding
             this.taskListView.lvTaskList.SelectedItem = null;
@@ -88,21 +97,13 @@ namespace TaskList2.UI.WPF2
             //  since the controls might have been previously 
             //  disabled for displaying a completed task
             this.EnableOrDisableTaskDetailViewControls(isEnabling: true);
-
-            this.taskDetailsView.tbTaskName.TextChanged -= this.tbTaskName_TextChanged;
-            this.taskDetailsView.dpDueDate.SelectedDateChanged -= this.DpDueDate_SelectedDateChanged;
-            this.taskDetailsView.cboRecurrence.SelectionChanged -= this.cboRecurrence_SelectionChanged;
-            this.taskDetailsView.cbIsImportant.Checked -= this.cbIsImportant_CheckedChanged;
-            this.taskDetailsView.cbIsImportant.Unchecked -= this.cbIsImportant_CheckedChanged;
-            this.taskDetailsView.cbIsComplete.Checked -= this.cbIsComplete_CheckedChanged;
-            this.taskDetailsView.cbIsComplete.Unchecked -= this.cbIsComplete_CheckedChanged;
-            this.taskDetailsView.tbNote.TextChanged -= this.tbNote_TextChanged;
+            RemoveEventHandlersFromTaskDetailsViewControls();
 
             this.btnSaveChangesEditTask.Click -= this.btnSaveChangesEditTask_Click;
             this.btnCancelChangesEditTask.Click -= this.btnCancelChangesEditTask_Click;
 
             // TODO: Get this into xaml as binding
-            Task? t = this.taskListView.lvTaskList.SelectedItem as Task;
+            Task? t = GetListViewSelectedItemAsT<Task>(this.taskListView.lvTaskList);
             this.taskDetailsView.DataContext = t;
             if (t != null)
             {
@@ -111,21 +112,14 @@ namespace TaskList2.UI.WPF2
                     this.taskDetailsView.IsEnabled = true;
                     //show the task delete button
                     this.btnDeleteTask.Visibility = Visibility.Visible;
-
-                    this.taskDetailsView.tbTaskName.TextChanged += this.tbTaskName_TextChanged;
-                    this.taskDetailsView.dpDueDate.SelectedDateChanged += this.DpDueDate_SelectedDateChanged;
-                    this.taskDetailsView.cboRecurrence.SelectionChanged += this.cboRecurrence_SelectionChanged;
-                    this.taskDetailsView.cbIsImportant.Checked += this.cbIsImportant_CheckedChanged;
-                    this.taskDetailsView.cbIsImportant.Unchecked += this.cbIsImportant_CheckedChanged;
-                    this.taskDetailsView.cbIsComplete.Checked += this.cbIsComplete_CheckedChanged;
-                    this.taskDetailsView.cbIsComplete.Unchecked += this.cbIsComplete_CheckedChanged;
-                    this.taskDetailsView.tbNote.TextChanged += this.tbNote_TextChanged;
+                    AddEventHandlersToTaskDetailsViewControls();
 
                     this.btnSaveChangesEditTask.Click += this.btnSaveChangesEditTask_Click;
                     this.btnCancelChangesEditTask.Click += this.btnCancelChangesEditTask_Click;
                 }
                 else   //TODO: Is this gonna cause problems when I try to add tasks (e.g., new task with Id = 0) ??
                     this.taskDetailsView.IsEnabled = false;
+                
                 if (this.taskDetailsView.IsEnabled && t.IsComplete)
                     this.EnableOrDisableTaskDetailViewControls(isEnabling: false);
             }
@@ -151,21 +145,21 @@ namespace TaskList2.UI.WPF2
 
         private void btnRenameFolder_Click(object sender, RoutedEventArgs e)
         {
-            Folder selectedFolder = (this.folderListView.lvFolderList.SelectedItem as Folder)!;
+            Folder selectedFolder = GetListViewSelectedItemAsT<Folder>(this.folderListView.lvFolderList);
             ConfigureControlsWhileRenamingFolder(selectedFolder);
         }
 
         private void btnRenameFolderConf_Click(object sender, RoutedEventArgs e)
         {
             //TODO: These next two (2) lines are repeated in btnCancelRenameFolder_Click()
-            Folder selectedFolder = (this.folderListView.lvFolderList.SelectedItem as Folder)!;
+            Folder selectedFolder = GetListViewSelectedItemAsT<Folder>(this.folderListView.lvFolderList);
             ConfigureControlsAfterRenamingFolder(selectedFolder);
         }
 
         private void btnCancelRenameFolder_Click(object sender, RoutedEventArgs e)
         {
             //TODO: These next two (2) lines are repeated in btnRenameFolderConf_Click()
-            Folder selectedFolder = (this.folderListView.lvFolderList.SelectedItem as Folder)!;
+            Folder selectedFolder = GetListViewSelectedItemAsT<Folder>(this.folderListView.lvFolderList);
             ConfigureControlsAfterRenamingFolder(selectedFolder);
         }
 
@@ -176,42 +170,109 @@ namespace TaskList2.UI.WPF2
             //unshow controls that are unrelated to adding a task
             ConfigureControlsWhileAddingTask();
 
+            this.RemoveEventHandlersFromTaskDetailsViewControls();
+
             //set datacontext for taskdetailsview to new Task that will be added
             this.taskDetailsView.DataContext = new Task();
+
+            this.AddEventHandlersToTaskDetailsViewControls();            
         }
 
         private void btnSaveChangesAddTask_Click(object sender, RoutedEventArgs e)
         {
             //TODO: Repeated code, same as found in btnCancelChangesAddTask_Click()
             ConfigureControlsAfterAddingTask();
-            this.taskDetailsView.DataContext = this.taskListView.lvTaskList.SelectedItem as Task;
+            this.RemoveEventHandlersFromTaskDetailsViewControls();
+            this.taskDetailsView.DataContext = GetListViewSelectedItemAsT<Task>(this.taskListView.lvTaskList);
+            this.AddEventHandlersToTaskDetailsViewControls();
         }
 
         private void btnCancelChangesAddTask_Click(object sender, RoutedEventArgs e)
         {
             //TODO: Repeated code, same as found in btnSaveChangesAddTask_Click()
             ConfigureControlsAfterAddingTask();
-            this.taskDetailsView.DataContext = this.taskListView.lvTaskList.SelectedItem as Task;
+            this.RemoveEventHandlersFromTaskDetailsViewControls();
+            this.taskDetailsView.DataContext = GetListViewSelectedItemAsT<Task>(this.taskListView.lvTaskList);
+            this.AddEventHandlersToTaskDetailsViewControls();
         }
 
-        private void tbTaskName_TextChanged(object sender, TextChangedEventArgs e) => this.ConfigureControlsWhenEditingTask();
+        private void tbTaskName_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            this.ConfigureControlsWhileEditingTask();
+            this.RemoveEventHandlersFromTaskDetailsViewControls();
+        } 
 
-        private void DpDueDate_SelectedDateChanged(object? sender, SelectionChangedEventArgs e) => this.ConfigureControlsWhenEditingTask();
+        private void dpDueDate_SelectedDateChanged(object? sender, SelectionChangedEventArgs e)
+        {
+            this.ConfigureControlsWhileEditingTask();
+            this.RemoveEventHandlersFromTaskDetailsViewControls();
+        }
 
-        private void cboRecurrence_SelectionChanged(object sender, SelectionChangedEventArgs e) => this.ConfigureControlsWhenEditingTask();
+        private void cboRecurrence_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            this.ConfigureControlsWhileEditingTask();
+            this.RemoveEventHandlersFromTaskDetailsViewControls();
+        }
 
-        private void cbIsImportant_CheckedChanged(object sender, RoutedEventArgs e) => this.ConfigureControlsWhenEditingTask();
+        private void cbIsImportant_CheckedChanged(object sender, RoutedEventArgs e)
+        {
+            this.ConfigureControlsWhileEditingTask();
+            this.RemoveEventHandlersFromTaskDetailsViewControls();
+        }
 
-        private void cbIsComplete_CheckedChanged(object sender, RoutedEventArgs e) => this.ConfigureControlsWhenEditingTask();
+        private void cbIsComplete_CheckedChanged(object sender, RoutedEventArgs e)
+        {
+            this.ConfigureControlsWhileEditingTask();
+            this.RemoveEventHandlersFromTaskDetailsViewControls();
+        }
 
-        private void tbNote_TextChanged(object sender, TextChangedEventArgs e) => this.ConfigureControlsWhenEditingTask();
+        private void tbNote_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            this.ConfigureControlsWhileEditingTask();
+            this.RemoveEventHandlersFromTaskDetailsViewControls();
+        }
 
-        private void btnSaveChangesEditTask_Click(object sender, RoutedEventArgs e) => this.ConfigureControlsAfterEditingTask();
+        private void btnSaveChangesEditTask_Click(object sender, RoutedEventArgs e)
+        {
+            this.ConfigureControlsAfterEditingTask();
+            this.AddEventHandlersToTaskDetailsViewControls();
+        }
 
-        private void btnCancelChangesEditTask_Click(object sender, RoutedEventArgs e) => this.ConfigureControlsAfterEditingTask();
+        private void btnCancelChangesEditTask_Click(object sender, RoutedEventArgs e)
+        {
+            this.ConfigureControlsAfterEditingTask();
+            this.AddEventHandlersToTaskDetailsViewControls();
+        }
         #endregion
 
         #region methods
+        private void RemoveEventHandlersFromTaskDetailsViewControls()
+        {
+            this.taskDetailsView.tbTaskName.TextChanged -= this.tbTaskName_TextChanged;
+            this.taskDetailsView.dpDueDate.SelectedDateChanged -= this.dpDueDate_SelectedDateChanged;
+            this.taskDetailsView.cboRecurrence.SelectionChanged -= this.cboRecurrence_SelectionChanged;
+            this.taskDetailsView.cbIsImportant.Checked -= this.cbIsImportant_CheckedChanged;
+            this.taskDetailsView.cbIsImportant.Unchecked -= this.cbIsImportant_CheckedChanged;
+            this.taskDetailsView.cbIsComplete.Checked -= this.cbIsComplete_CheckedChanged;
+            this.taskDetailsView.cbIsComplete.Unchecked -= this.cbIsComplete_CheckedChanged;
+            this.taskDetailsView.tbNote.TextChanged -= this.tbNote_TextChanged;
+        }
+
+        private void AddEventHandlersToTaskDetailsViewControls()
+        {
+            if (this.taskDetailsView.DataContext is Task t && t.Id > 0)
+            {
+                this.taskDetailsView.tbTaskName.TextChanged += this.tbTaskName_TextChanged;
+                this.taskDetailsView.dpDueDate.SelectedDateChanged += this.dpDueDate_SelectedDateChanged;
+                this.taskDetailsView.cboRecurrence.SelectionChanged += this.cboRecurrence_SelectionChanged;
+                this.taskDetailsView.cbIsImportant.Checked += this.cbIsImportant_CheckedChanged;
+                this.taskDetailsView.cbIsImportant.Unchecked += this.cbIsImportant_CheckedChanged;
+                this.taskDetailsView.cbIsComplete.Checked += this.cbIsComplete_CheckedChanged;
+                this.taskDetailsView.cbIsComplete.Unchecked += this.cbIsComplete_CheckedChanged;
+                this.taskDetailsView.tbNote.TextChanged += this.tbNote_TextChanged;
+            }            
+        }
+
         private void EnableOrDisableTaskDetailViewControls(bool isEnabling = true)
         {
             TaskDetailsView tlv = this.taskDetailsView;
@@ -233,7 +294,7 @@ namespace TaskList2.UI.WPF2
             tlv.cbIsComplete.IsEnabled = false;
             tlv.tbNote.IsEnabled = false;
         }
-
+        
         private void ConfigureFolderRenameAndDeleteButtons(Folder folder)
         {
             DependencyObject container = this.folderListView.lvFolderList.ItemContainerGenerator.ContainerFromItem(folder);
@@ -270,6 +331,18 @@ namespace TaskList2.UI.WPF2
         private void ConfigureControlsWhileRenamingFolder(Folder folder)
         {
             DependencyObject container = null!;
+
+            //disable selection on the folder list view
+            foreach (Folder f in folderListView.lvFolderList.Items)
+            {
+                container = this.folderListView.lvFolderList.ItemContainerGenerator.ContainerFromItem(f);
+                if (f.Id != folder.Id)
+                {
+                    ((ListViewItem)container).Focusable = false;
+                }    
+            }           
+
+            //container = null!;
             Button btnRenameFolderConf;
             Button btnCancelRenameFolder;
 
@@ -325,7 +398,7 @@ namespace TaskList2.UI.WPF2
             Button btnDeleteFolder = this.GetButtonFromContainerByName(container, "btnDeleteFolder");
 
             buttonsToShow.AddRange(new List<ContentControl>() { btnRenameFolder, btnDeleteFolder, btnAddFolder });
-            if (this.taskListView.lvTaskList.SelectedItem is Task && (this.taskListView.lvTaskList.SelectedItem as Task)!.Id > 0)
+            if (GetListViewSelectedItemAsT<Task>(this.taskListView.lvTaskList) is Task && GetListViewSelectedItemAsT<Task>(this.taskListView.lvTaskList).Id > 0)
                 buttonsToShow.Add(btnDeleteTask);
             //show Add Task button only if appropriate for selected folder
             //cannot add tasks directly to Planned, Recurring, Important, or Completed folders
@@ -347,6 +420,13 @@ namespace TaskList2.UI.WPF2
 
             SetVisibilityForListOfControls(buttonsToShow, Visibility.Visible);
             SetVisibilityForListOfControls(buttonsToUnShow, Visibility.Collapsed);
+
+            //enable selection on the folder list view
+            foreach (Folder f in folderListView.lvFolderList.Items)
+            {
+                container = this.folderListView.lvFolderList.ItemContainerGenerator.ContainerFromItem(f);
+                ((ListViewItem)container).Focusable = true;
+            }
         }
 
         private void ConfigureControlsWhileAddingTask()
@@ -357,6 +437,10 @@ namespace TaskList2.UI.WPF2
             this.folderListView.IsEnabled = false;
             this.taskListView.IsEnabled = false;
             this.taskDetailsView.IsEnabled = true;
+
+            if (GetListViewSelectedItemAsT<Task>(this.taskListView.lvTaskList) is Task t && !t.IsComplete)
+                this.EnableOrDisableTaskDetailViewControls(isEnabling: true);
+            
         }
 
         private void ConfigureControlsAfterAddingTask()
@@ -371,12 +455,12 @@ namespace TaskList2.UI.WPF2
             if (this.taskListView.lvTaskList.HasItems)
                 this.btnAddTask.Visibility = Visibility.Visible;
 
-            if (this.taskListView.lvTaskList.SelectedItem is Task && (this.taskListView.lvTaskList.SelectedItem as Task)!.Id > 0)
+            if (GetListViewSelectedItemAsT<Task>(this.taskListView.lvTaskList) is Task && GetListViewSelectedItemAsT<Task>(this.taskListView.lvTaskList).Id > 0)
             {
                 SetVisibilityForListOfControls(new List<ContentControl>() { btnDeleteTask }, Visibility.Visible);
                 //show Add Task button only if appropriate for selected folder
                 //cannot add tasks directly to Planned, Recurring, Important, or Completed folders
-                switch ((this.folderListView.lvFolderList.SelectedItem as Folder)!.FolderName) //TODO: CanHaveTasksAdded should be a property of folder that is defined in the db; for now maybe move it into a get-only property on the folder model (client model only)
+                switch (GetListViewSelectedItemAsT<Folder>(this.folderListView.lvFolderList).FolderName) //TODO: CanHaveTasksAdded should be a property of folder that is defined in the db; for now maybe move it into a get-only property on the folder model (client model only)
                 {
                     case "Planned":
                     case "Recurring":
@@ -388,10 +472,11 @@ namespace TaskList2.UI.WPF2
                         SetVisibilityForListOfControls(new List<ContentControl>() { this.btnAddTask }, Visibility.Visible);
                         break;
                 }
+                this.taskDetailsView.IsEnabled = true;
             }
         }
 
-        private void ConfigureControlsWhenEditingTask()
+        private void ConfigureControlsWhileEditingTask()
         {
             List<ContentControl> buttonsToShow = new();
             List<ContentControl> buttonsToUnShow = new();
@@ -414,10 +499,8 @@ namespace TaskList2.UI.WPF2
             buttonsToShow.AddRange(new List<ContentControl>() { btnAddFolder });
             buttonsToUnShow.AddRange(new List<ContentControl>() { btnSaveChangesEditTask, btnCancelChangesEditTask });
 
-            if (this.taskListView.lvTaskList.SelectedItem is Task t && t.Id > 0)
-            {
+            if (GetListViewSelectedItemAsT<Task>(this.taskListView.lvTaskList) is Task t && t.Id > 0)
                 buttonsToShow.AddRange(new List<ContentControl>() { this.btnAddTask, this.btnDeleteTask });
-            }
 
             SetVisibilityForListOfControls(buttonsToShow, Visibility.Visible);
             SetVisibilityForListOfControls(buttonsToUnShow, Visibility.Collapsed);
@@ -429,6 +512,9 @@ namespace TaskList2.UI.WPF2
         private Button GetButtonFromContainerByName(DependencyObject container, string buttonName)
             => (AllChildren(container).FirstOrDefault(c => c is Button && c.Name == buttonName) as Button)!;
 
+        private TextBox GetTextBoxFromContainerByName(DependencyObject container, string textBoxName)
+            => (AllChildren(container).FirstOrDefault(c => c is TextBox && c.Name == textBoxName) as TextBox)!;
+        
         //https://dzone.com/articles/how-access-named-control
         private List<Control> AllChildren(DependencyObject parent)
         {
@@ -450,6 +536,8 @@ namespace TaskList2.UI.WPF2
             foreach (ContentControl control in controls)
                 control.Visibility = visibility;
         }
+
+        private static T GetListViewSelectedItemAsT<T>(ListView listview) => (T)listview.SelectedItem;
         #endregion
     }
 }
