@@ -20,6 +20,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using TaskList2.Services;
 using TaskList2.Services.Models;
 using TaskList2.UI.WPF2.Controls;
 
@@ -69,26 +70,36 @@ namespace TaskList2.UI.WPF2
             //they may still be visible from the last selected item
             if (e.RemovedItems.Count == 1 && e.RemovedItems[0] is Folder previouslySelectedFolder)
             {
-                UnconfigureFolderRenameAndDeleteButtons(previouslySelectedFolder);
+                if (this.folderListView.lvFolderList.Items.Contains(previouslySelectedFolder))
+                {
+                    UnconfigureFolderRenameAndDeleteButtons(previouslySelectedFolder);
+                }                
             }
 
             Folder selectedFolder = GetListViewSelectedItemAsT<Folder>(this.folderListView.lvFolderList);
 
-            this.taskListView.lvTaskList.ItemsSource = selectedFolder.Tasks;    // TODO: Get this into xaml as binding
-            this.taskListView.lvTaskList.SelectedItem = null;
-
-            this.btnDeleteTask.Visibility = Visibility.Collapsed;
-
-            //show folder rename and delete buttons in folderlistview for selected item
-            ConfigureFolderRenameAndDeleteButtons(selectedFolder);
-
-            //show Add Task button only if appropriate for selected folder
-            //cannot add tasks directly to Planned, Recurring, Important, or Completed folders
-            this.btnAddTask.Visibility = selectedFolder.FolderName switch
+            if (selectedFolder == null)
             {
-                "Planned" or "Recurring" or "Important" or "Completed" => Visibility.Collapsed,
-                _ => Visibility.Visible,
-            };
+                this.taskListView.lvTaskList.ItemsSource = null;
+            }
+            else
+            {
+                this.taskListView.lvTaskList.ItemsSource = selectedFolder.Tasks;    // TODO: Get this into xaml as binding
+                this.taskListView.lvTaskList.SelectedItem = null;
+
+                //show folder rename and delete buttons in folderlistview for selected item
+                ConfigureFolderRenameAndDeleteButtons(selectedFolder);
+
+                //show Add Task button only if appropriate for selected folder
+                //cannot add tasks directly to Planned, Recurring, Important, or Completed folders
+                this.btnAddTask.Visibility = selectedFolder.FolderName switch
+                {
+                    "Planned" or "Recurring" or "Important" or "Completed" => Visibility.Collapsed,
+                    _ => Visibility.Visible,
+                };
+            }            
+
+            this.btnDeleteTask.Visibility = Visibility.Collapsed;            
         }
 
         private void lvTaskList_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -129,10 +140,40 @@ namespace TaskList2.UI.WPF2
         {
             this.grdMain.Visibility = Visibility.Collapsed;
             this.grdAddFolderView.Visibility = Visibility.Visible;
+
+            this.addFolderView.DataContext = new Folder();
         }
 
         private void btnAddFolderConf_Click(object sender, RoutedEventArgs e)
         {
+            this.addFolderView.lblFolderNameErrors.Visibility = Visibility.Collapsed;
+            
+            if (this.addFolderView.DataContext is Folder folderToAdd)
+            {
+                if (folderToAdd.IsValid())
+                {
+                    FolderService fs = new();
+                    folderToAdd = fs.AddFolder(folderToAdd);
+
+                    if (folderToAdd.Id > 0)
+                    {
+                        //this.folderListView.lvFolderList.Items.Add(folderToAdd);
+                        this._context.Folders.Add(folderToAdd);
+                        this.folderListView.lvFolderList.Items.Refresh();
+                        this.folderListView.lvFolderList.SelectedItem = folderToAdd;
+                    }
+                    else
+                    {
+                        //TODO: Handle error
+                    }
+                }
+                else
+                {
+                    this.addFolderView.lblFolderNameErrors.Visibility = Visibility.Visible;
+                    this.addFolderView.lblFolderNameErrors.ToolTip = folderToAdd.GetValidationErrorsAsString();
+                }
+            }
+            
             this.grdMain.Visibility = Visibility.Visible;
             this.grdAddFolderView.Visibility = Visibility.Collapsed;
         }
@@ -147,23 +188,71 @@ namespace TaskList2.UI.WPF2
         {
             Folder selectedFolder = GetListViewSelectedItemAsT<Folder>(this.folderListView.lvFolderList);
             ConfigureControlsWhileRenamingFolder(selectedFolder);
+
+            DependencyObject container = this.folderListView.lvFolderList.ItemContainerGenerator.ContainerFromItem(selectedFolder);
+            TextBox tb = GetTextBoxFromContainerByName(container, "tbFolderName");
+            tb.IsEnabled = true;
         }
 
         private void btnRenameFolderConf_Click(object sender, RoutedEventArgs e)
         {
-            //TODO: These next two (2) lines are repeated in btnCancelRenameFolder_Click()
-            Folder selectedFolder = GetListViewSelectedItemAsT<Folder>(this.folderListView.lvFolderList);
-            ConfigureControlsAfterRenamingFolder(selectedFolder);
+            this.addFolderView.lblFolderNameErrors.Visibility = Visibility.Collapsed;
+
+            Folder folderToRename = GetListViewSelectedItemAsT<Folder>(this.folderListView.lvFolderList);
+            if (folderToRename.IsValid())
+            {
+                FolderService fs = new();
+                fs.UpdateFolder(folderToRename);
+
+                ConfigureControlsAfterRenamingFolder(folderToRename);
+
+                DependencyObject container = this.folderListView.lvFolderList.ItemContainerGenerator.ContainerFromItem(folderToRename);
+                TextBox tb = GetTextBoxFromContainerByName(container, "tbFolderName");
+                tb.IsEnabled = false;
+            }
+            else
+            {
+                this.addFolderView.lblFolderNameErrors.Visibility = Visibility.Visible;
+                this.addFolderView.lblFolderNameErrors.ToolTip = folderToRename.GetValidationErrorsAsString();
+            }
         }
 
         private void btnCancelRenameFolder_Click(object sender, RoutedEventArgs e)
         {
-            //TODO: These next two (2) lines are repeated in btnRenameFolderConf_Click()
+            this.addFolderView.lblFolderNameErrors.Visibility = Visibility.Collapsed;
+
             Folder selectedFolder = GetListViewSelectedItemAsT<Folder>(this.folderListView.lvFolderList);
             ConfigureControlsAfterRenamingFolder(selectedFolder);
+
+            DependencyObject container = this.folderListView.lvFolderList.ItemContainerGenerator.ContainerFromItem(selectedFolder);
+            TextBox tb = GetTextBoxFromContainerByName(container, "tbFolderName");
+            tb.IsEnabled = false;
         }
 
-        private void btnDeleteFolder_Click(object sender, RoutedEventArgs e) => throw new System.NotImplementedException();
+        private void btnDeleteFolder_Click(object sender, RoutedEventArgs e)
+        {
+            string message = "Delete this folder and everything in it?";
+            string title = "Confirm Folder Delete";
+
+            MessageBoxResult result = MessageBox.Show(message, title, MessageBoxButton.YesNo, MessageBoxImage.Warning);
+            if (result == MessageBoxResult.Yes)
+            {
+                FolderService fs = new();
+                Folder f = GetListViewSelectedItemAsT<Folder>(this.folderListView.lvFolderList);
+                if (f != null)
+                {
+                    if (fs.DeleteFolder(f.Id))
+                    {
+                        this._context.Folders.Remove(f);
+                        this.folderListView.lvFolderList.SelectedItem = null;
+                    }
+                    else
+                    {
+                        //TODO: Error handling
+                    }
+                } 
+            }
+        }
 
         private void btnAddTask_Click(object sender, RoutedEventArgs e)
         {
@@ -298,21 +387,24 @@ namespace TaskList2.UI.WPF2
         private void ConfigureFolderRenameAndDeleteButtons(Folder folder)
         {
             DependencyObject container = this.folderListView.lvFolderList.ItemContainerGenerator.ContainerFromItem(folder);
-            Button btnRenameFolder = this.GetButtonFromContainerByName(container, "btnRenameFolder");
-            Button btnDeleteFolder = this.GetButtonFromContainerByName(container, "btnDeleteFolder");
+            if (container != null)  //TODO: This gets around a problem when, after adding a folder and passing it down to this method, the container generated by the line above is null; as such after adding a folder it is selected in the folder list but it doesn't have rename and delete buttons
+            {
+                Button btnRenameFolder = this.GetButtonFromContainerByName(container, "btnRenameFolder");
+                Button btnDeleteFolder = this.GetButtonFromContainerByName(container, "btnDeleteFolder");
 
-            if (folder.IsRenameable)
-            {
-                SetVisibilityForListOfControls(new List<ContentControl>() { btnRenameFolder }, Visibility.Visible);
-                //add click event handler for folder rename button
-                btnRenameFolder.Click += this.btnRenameFolder_Click;
-            }
-            if (folder.IsDeleteable)
-            {
-                SetVisibilityForListOfControls(new List<ContentControl>() { btnDeleteFolder }, Visibility.Visible);
-                //add click event handler for folder delete button
-                btnDeleteFolder.Click += this.btnDeleteFolder_Click;
-            }
+                if (folder.IsRenameable)
+                {
+                    SetVisibilityForListOfControls(new List<ContentControl>() { btnRenameFolder }, Visibility.Visible);
+                    //add click event handler for folder rename button
+                    btnRenameFolder.Click += this.btnRenameFolder_Click;
+                }
+                if (folder.IsDeleteable)
+                {
+                    SetVisibilityForListOfControls(new List<ContentControl>() { btnDeleteFolder }, Visibility.Visible);
+                    //add click event handler for folder delete button
+                    btnDeleteFolder.Click += this.btnDeleteFolder_Click;
+                }
+            }            
         }
 
         private void UnconfigureFolderRenameAndDeleteButtons(Folder folder)
@@ -338,7 +430,10 @@ namespace TaskList2.UI.WPF2
                 container = this.folderListView.lvFolderList.ItemContainerGenerator.ContainerFromItem(f);
                 if (f.Id != folder.Id)
                 {
-                    ((ListViewItem)container).Focusable = false;
+                    if (container != null)
+                    {
+                        ((ListViewItem)container).Focusable = false;
+                    }                    
                 }    
             }           
 

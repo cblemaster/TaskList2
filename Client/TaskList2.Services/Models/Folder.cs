@@ -1,4 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Runtime.CompilerServices;
+using System.Text;
 using TaskList2.Services.Validation;
 
 namespace TaskList2.Services.Models
@@ -15,7 +17,7 @@ namespace TaskList2.Services.Models
 
         public ICollection<ValidationError> ValidationErrors { get; set; } = new List<ValidationError>();
 
-        internal static string GetCapitalizedFolderName(string folderName)
+        private static string GetCapitalizedFolderName(string folderName)
         {
             if (string.IsNullOrEmpty(folderName)
                 || string.IsNullOrWhiteSpace(folderName))
@@ -25,19 +27,30 @@ namespace TaskList2.Services.Models
 
             char firstChar = folderName[0];
 
-            if (firstChar.ToString() == firstChar.ToString().ToUpper())
-                return folderName;
-
-            return string.Concat(firstChar.ToString().ToUpper(), folderName.AsSpan(1));
+            return firstChar.ToString() == firstChar.ToString().ToUpper()
+                ? folderName
+                : string.Concat(firstChar.ToString().ToUpper(), folderName.AsSpan(1));
         }
 
-        internal static bool IsFolderNameUnique(string folderName)
+        private static bool IsFolderNameUnique(string folderName)
         {
             FolderService fs = new();
-            if (fs.GetFolders().Select(f => f.FolderName).ToList().Contains(folderName))
-                return false;
+            return !fs.GetFolders().Select(f => f.FolderName).ToList().Contains(folderName);
+        }
 
-            return true;
+        public string GetValidationErrorsAsString()
+        {
+            List<ValidationError> errors = this.ValidationErrors.ToList();
+            StringBuilder sb = new();
+            for (int i = 0; i < errors.Count; i++)
+            {
+                if (errors.Count == 1 || i == errors.Count - 1)
+                {
+                    sb.Append(errors[i].ErrorMessage);
+                }
+                sb.AppendLine(errors[i].ErrorMessage);
+            }
+            return sb.ToString();
         }
 
         public bool IsValid()
@@ -54,10 +67,7 @@ namespace TaskList2.Services.Models
             if (this.FolderName.Length > 100)
                 this.ValidationErrors.Add(new() { InvalidPropertyName = "FolderName", ErrorMessage = "Max length for Folder Name is 100." });
 
-            if (this.ValidationErrors.Any())
-                return false;
-
-            return true;
+            return !this.ValidationErrors.Any();
         }
     }
 }
